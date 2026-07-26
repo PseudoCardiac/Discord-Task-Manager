@@ -4,16 +4,17 @@ from category import Category
 
 
 class Task:
-    def __init__( self, name: str, category: Category, desc = "", number = 0, start = datetime.now(), end: datetime | None = None ):
+    def __init__( self, name: str, category: Category, desc = "", number = 0, start = None, end: datetime | None = None ):
         self.name = name
         self.category = category
         self.desc = desc
+        self.start = datetime.now() if start is None else start
         with open( "data/today.json", 'r', encoding = "UTF-8" ) as f:
             today = json.load( f )
-        todaysRecord = today.get( start.strftime( "%Y%m%d" ) ) or []
+        todaysRecord = today.get( self.start.strftime( "%Y%m%d" ) ) or []
         self.number = len( todaysRecord ) + 1
-        self.start = start
         self.end = end
+
 
     def toJsonObj( self ):
         obj: dict[ str, str ] = {}
@@ -26,6 +27,7 @@ class Task:
         obj[ "end" ] = self.end.strftime( "%d/%m/%Y, %H:%M:%S" ) if self.end is not None else "None"
 
         return obj
+
 
     @staticmethod
     def toTaskObj( d: dict[ str, str ] ):
@@ -62,6 +64,7 @@ class Task:
             json.dump( {}, f, indent = 4 )
 
         return Task.toTaskObj( task )
+
 
     def record( self ):
         with open( "data/today.json", 'r', encoding = "UTF-8" ) as f:

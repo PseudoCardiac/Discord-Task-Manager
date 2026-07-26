@@ -9,7 +9,7 @@ from task_embed import TaskEmbed, TaskEmbedView
 
 
 class RegisterTaskCog( Cog ):
-    def __init__( self, bot ):
+    def __init__( self, bot: "Faust" ):
         self.bot = bot
 
     @discord.app_commands.command( name = "태스크_등록", description = "새로운 태스크를 등록합니다." )
@@ -18,13 +18,13 @@ class RegisterTaskCog( Cog ):
     @discord.app_commands.rename( category = "카테고리" )
     async def registerTask( self, i: discord.Interaction, name: str, category: discord.Role, desc: str = "" ):
         try:
-            categoryobj = Category( self.bot.info.tag.index( category ) )
+            categoryObj = Category( self.bot.info.tag.index( category ) )
         except ValueError:
             await i.response.send_message( "잘못된 카테고리입니다." )
         else:
             task = Task(
                 name = name,
-                category = categoryobj,
+                category = categoryObj,
                 desc = desc
             )
 

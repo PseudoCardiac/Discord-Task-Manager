@@ -7,7 +7,7 @@ from register_task_cog import RegisterTaskCog
 
 class Faust( Bot ):
     def __init__( self ):
-        super().__init__( command_prefix = "", intents = discord.Intents.all() )
+        super().__init__( command_prefix = "@Faust", intents = discord.Intents.all() )
 
 
     async def on_ready(self):

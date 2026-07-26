@@ -13,7 +13,8 @@ class Faust( Bot ):
     async def on_ready(self):
         self.info = Info( self )
         await self.add_cog( RegisterTaskCog( self ) )
-        await self.tree.sync()
+        # await self.tree.sync()
+        print( "파우스트 온라인." )
 
 
     def runBot( self ):

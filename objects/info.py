@@ -14,7 +14,7 @@ class Info:
         self.tag_study: discord.Role = self.guild.get_role( 1530556094806753300 )               # type: ignore
         self.tag_hobby: discord.Role = self.guild.get_role( 1530556106336764004 )               # type: ignore
         self.tag_game: discord.Role = self.guild.get_role( 1530556325325574184 )                # type: ignore
-        self.tag_sleep: discord.Role = self.guild.get_role( 1530556370200559788 )               # type: ignore
+        self.tag_sleep: discord.Role = self.guild.get_role( 1530556359433785425 )               # type: ignore
         self.tag_etc: discord.Role = self.guild.get_role( 1530556370200559788 )                 # type: ignore
 
         self.tag = [ self.tag_university, self.tag_living, self.tag_workout, self.tag_rest, self.tag_study, self.tag_hobby, self.tag_game, self.tag_sleep, self.tag_etc ]

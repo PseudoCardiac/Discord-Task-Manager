@@ -1,9 +1,9 @@
 import discord, re
 from datetime import datetime
-from info import Info
-from task import Task
-from minutes_to_hours import minutesToHours
-from update_dashboard import updateTimetable
+from objects.info import Info
+from objects.task import Task
+from utils.minutes_to_hours import minutesToHours
+from utils.update_dashboard import updateTimetable
 
 
 weekdays = [ '월', '화', '수', '목', '금', '토', '일' ]

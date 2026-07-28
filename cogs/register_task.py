@@ -3,9 +3,9 @@ from discord.ext.commands import Cog
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bot.faust import Faust
-from task import Task
-from category import Category
-from task_embed import TaskEmbed, TaskEmbedView
+from objects.task import Task
+from objects.category import Category
+from objects.task_embed import TaskEmbed, TaskEmbedView
 
 
 class RegisterTaskCog( Cog ):

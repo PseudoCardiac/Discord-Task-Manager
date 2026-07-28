@@ -2,7 +2,7 @@ import discord, datetime
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bot.faust import Faust
-from chart import genChart
+from utils.chart import genChart
 
 
 async def updateTimetable( faust: "Faust" ):

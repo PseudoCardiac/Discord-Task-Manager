@@ -2,7 +2,7 @@ import discord, datetime, json
 from zoneinfo import ZoneInfo
 from discord.ext import tasks
 from discord.ext.commands import Cog
-from chart import genChart
+from utils.chart import genChart
 
 
 MIDNIGHT = datetime.time(

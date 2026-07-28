@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from category import Category
+from objects.category import Category
 
 
 class Task:

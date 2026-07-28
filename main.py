@@ -1,4 +1,4 @@
-from faust import FAUST
+from bot.faust import FAUST
 
 
 FAUST.runBot()

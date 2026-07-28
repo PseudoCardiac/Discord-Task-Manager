@@ -10,8 +10,9 @@ class Faust( Bot ):
         super().__init__( command_prefix = "@Faust", intents = discord.Intents.all() )
 
 
-    async def on_ready(self):
-        self.info = Info( self )
+    async def on_ready( self ):
+        self.info = Info()
+        await self.info.init( self )
         await self.add_cog( RegisterTaskCog( self ) )
         # await self.tree.sync()
         print( "파우스트 온라인." )

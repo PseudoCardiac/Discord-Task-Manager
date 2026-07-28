@@ -3,6 +3,7 @@ from datetime import datetime
 from info import Info
 from task import Task
 from minutes_to_hours import minutesToHours
+from update_dashboard import updateTimetable
 
 
 weekdays = [ '월', '화', '수', '목', '금', '토', '일' ]
@@ -53,6 +54,7 @@ class FinishButton( discord.ui.Button ):
         # ============================
 
         result.record()
+        await updateTimetable( interaction.client ) # type: ignore
         await interaction.response.send_message( "태스크 완료됨" )
 
 

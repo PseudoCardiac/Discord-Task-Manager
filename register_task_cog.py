@@ -2,7 +2,7 @@ import discord
 from discord.ext.commands import Cog
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from faust import Faust
+    from bot.faust import Faust
 from task import Task
 from category import Category
 from task_embed import TaskEmbed, TaskEmbedView

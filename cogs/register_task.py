@@ -36,3 +36,24 @@ class RegisterTaskCog( Cog ):
             embed = TaskEmbed( task, self.bot.info )
             await self.bot.info.channel_log.send( embed = embed, view = TaskEmbedView( embed ) )
             await i.response.send_message( "태스크가 등록되었습니다." )
+
+
+    @discord.app_commands.command( name = "태스크_완료", description = "진행 중인 태스크를 완료합니다." )
+    async def finishTask( self, i: discord.Interaction ):
+        result = Task.pop()
+        if result is False:
+            await i.response.send_message( "태스크를 찾지 못함" )
+            return
+        
+        result.record()
+
+        await i.response.send_message( "태스크 완료됨" )
+
+    @discord.app_commands.command( name = "태스크_중단", description = "진행 중인 태스크를 중단합니다." )
+    async def abortTask( self, i: discord.Interaction ):
+        result = Task.pop()
+        if result is False:
+            await i.response.send_message( "태스크를 찾지 못함" )
+            return
+
+        await i.response.send_message( "태스크 중단됨" )

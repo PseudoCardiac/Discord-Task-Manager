@@ -3,6 +3,7 @@ from discord.ext.commands import Bot
 from dotenv import load_dotenv
 from objects.info import Info
 from cogs.register_task import RegisterTaskCog
+from cogs.daily_report import DailyReportCog
 
 
 class Faust( Bot ):
@@ -14,6 +15,7 @@ class Faust( Bot ):
         self.info = Info()
         await self.info.init( self )
         await self.add_cog( RegisterTaskCog( self ) )
+        await self.add_cog( DailyReportCog( self.info.channel_log ) )
         # await self.tree.sync()
         print( "파우스트 온라인." )
 

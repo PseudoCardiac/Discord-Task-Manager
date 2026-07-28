@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 from objects.task import Task
 from objects.category import Category
 from objects.task_embed import TaskEmbed, TaskEmbedView
+from utils.update_dashboard import updateTimetable
 
 
 class RegisterTaskCog( Cog ):
@@ -47,6 +48,7 @@ class RegisterTaskCog( Cog ):
         
         result.record()
 
+        await updateTimetable( i.client ) # type: ignore
         await i.response.send_message( "태스크 완료됨" )
 
     @discord.app_commands.command( name = "태스크_중단", description = "진행 중인 태스크를 중단합니다." )

@@ -1,4 +1,4 @@
-import discord
+import discord, json
 from discord.ext.commands import Cog
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -37,25 +37,25 @@ class RegisterTaskCog( Cog ):
             await i.response.send_message( "태스크가 등록되었습니다." )
 
 
-    # TODO 모든 태스크를 pop하도록 수정하기
-    @discord.app_commands.command( name = "태스크_완료", description = "진행 중인 태스크를 완료합니다." )
+    @discord.app_commands.command( name = "태스크_완료", description = "진행 중인 태스크를 전부 완료합니다." )
     async def finishTask( self, i: discord.Interaction ):
-        result = Task.pop()
-        if result is False:
-            await i.response.send_message( "태스크를 찾지 못함" )
-            return
-        
-        result.record()
+        with open( "data/current_tasks.json", 'r', encoding = "UTF-8" ) as f:
+            currentTasks: list[ dict[ str, str ] ] = json.load( f )
+
+        for currentTask in currentTasks:
+            task = Task.toTaskObj( currentTask )
+            task.record()
+
+        with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
+            json.dump( {}, f )
 
         await updateTimetable( i.client ) # type: ignore
         await i.response.send_message( "태스크 완료됨" )
 
-    # TODO 모든 태스크를 pop하도록 수정하기
-    @discord.app_commands.command( name = "태스크_중단", description = "진행 중인 태스크를 중단합니다." )
+
+    @discord.app_commands.command( name = "태스크_중단", description = "진행 중인 태스크를 전부 중단합니다." )
     async def abortTask( self, i: discord.Interaction ):
-        result = Task.pop()
-        if result is False:
-            await i.response.send_message( "태스크를 찾지 못함" )
-            return
+        with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
+            json.dump( {}, f )
 
         await i.response.send_message( "태스크 중단됨" )

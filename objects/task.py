@@ -52,13 +52,12 @@ class Task:
         현재 기록 중인 태스크 목록에 self를 push한다
         """
         with open( "data/current_tasks.json", 'r', encoding = "UTF-8" ) as f:
-            task = json.load( f )
+            currentTasks: list[ dict[ str, str ] ] = json.load( f )
 
-        if task != {}:
-            return False
-
+        currentTasks.append( self.toJsonObj() )
+        
         with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
-            json.dump( self.toJsonObj(), f, indent = 4 )
+            json.dump( currentTasks, f, indent = 4 )
 
 
     def pop( self ):
@@ -73,7 +72,11 @@ class Task:
         if not currentTasks:
             return False
 
-        idx = currentTasks.index( jsonObj )
+        try:
+            idx = currentTasks.index( jsonObj )
+        except ValueError:
+            return False
+
         task = currentTasks.pop( idx )
 
         with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:

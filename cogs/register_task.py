@@ -2,11 +2,9 @@ import discord
 from discord.ext.commands import Cog
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from bot.faust import Faust
-from objects.task import Task
-from objects.category import Category
-from objects.task_embed import TaskEmbed, TaskEmbedView
-from utils.update_dashboard import updateTimetable
+    from bot import Faust
+from objects import Task, Category, TaskEmbed, TaskEmbedView
+from utils import updateTimetable
 
 
 class RegisterTaskCog( Cog ):
@@ -39,6 +37,7 @@ class RegisterTaskCog( Cog ):
             await i.response.send_message( "태스크가 등록되었습니다." )
 
 
+    # TODO 모든 태스크를 pop하도록 수정하기
     @discord.app_commands.command( name = "태스크_완료", description = "진행 중인 태스크를 완료합니다." )
     async def finishTask( self, i: discord.Interaction ):
         result = Task.pop()
@@ -51,6 +50,7 @@ class RegisterTaskCog( Cog ):
         await updateTimetable( i.client ) # type: ignore
         await i.response.send_message( "태스크 완료됨" )
 
+    # TODO 모든 태스크를 pop하도록 수정하기
     @discord.app_commands.command( name = "태스크_중단", description = "진행 중인 태스크를 중단합니다." )
     async def abortTask( self, i: discord.Interaction ):
         result = Task.pop()

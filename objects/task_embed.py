@@ -2,8 +2,7 @@ import discord, re
 from datetime import datetime
 from objects.info import Info
 from objects.task import Task
-from utils.minutes_to_hours import minutesToHours
-from utils.update_dashboard import updateTimetable
+from utils import minutesToHours, updateTimetable
 
 
 weekdays = [ '월', '화', '수', '목', '금', '토', '일' ]
@@ -21,14 +20,14 @@ class TaskEmbed( discord.Embed ):
 
 
 class TaskEmbedView( discord.ui.View ):
-    def __init__( self, parentEmbed: discord.Embed ):
+    def __init__( self, parentEmbed: TaskEmbed ):
         super().__init__( timeout = None )
         self.add_item( FinishButton( parentEmbed ) )
         self.add_item( AbortButton( parentEmbed ) )
 
 
 class FinishButton( discord.ui.Button ):
-    def __init__( self, parentEmbed: discord.Embed ):
+    def __init__( self, parentEmbed: TaskEmbed ):
         super().__init__(
             style = discord.ButtonStyle.primary,
             label = "태스크 완료"
@@ -36,7 +35,7 @@ class FinishButton( discord.ui.Button ):
         self.parentEmbed = parentEmbed
 
     async def callback( self, interaction: discord.Interaction ):
-        result = Task.pop()
+        result = self.parentEmbed.task.pop()
         if result is False:
             await interaction.response.send_message( "태스크를 찾지 못함" )
             return
@@ -59,7 +58,7 @@ class FinishButton( discord.ui.Button ):
 
 
 class AbortButton( discord.ui.Button ):
-    def __init__( self, parentEmbed: discord.Embed ):
+    def __init__( self, parentEmbed: TaskEmbed ):
         super().__init__(
             style = discord.ButtonStyle.danger,
             label = "태스크 중단"
@@ -67,7 +66,7 @@ class AbortButton( discord.ui.Button ):
         self.parentEmbed = parentEmbed
 
     async def callback( self, interaction: discord.Interaction ):
-        result = Task.pop()
+        result = self.parentEmbed.task.pop()
         if result is False:
             await interaction.response.send_message( "태스크를 찾지 못함" )
             return

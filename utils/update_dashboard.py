@@ -1,8 +1,8 @@
 import discord, datetime
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from bot.faust import Faust
-from utils.chart import genChart
+    from bot import Faust
+from utils import genChart
 
 
 async def updateTimetable( faust: "Faust" ):

@@ -1,9 +1,8 @@
 import discord, os, json
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
-from objects.info import Info
-from cogs.register_task import RegisterTaskCog
-from cogs.daily_report import DailyReportCog
+from objects import Info
+from cogs import RegisterTaskCog, DailyReportCog
 
 
 class Faust( Bot ):

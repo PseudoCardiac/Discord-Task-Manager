@@ -19,7 +19,7 @@ class RegisterTaskCog( Cog ):
         try:
             categoryObj = Category( self.bot.info.tag.index( category ) )
         except ValueError:
-            await i.response.send_message( "잘못된 카테고리입니다." )
+            await i.response.send_message( "잘못된 카테고리입니다.", ephemeral = True, delete_after = 10 )
         else:
             task = Task(
                 name = name,
@@ -29,12 +29,12 @@ class RegisterTaskCog( Cog ):
 
             result = task.push()
             if result is False:
-                await i.response.send_message( "태스크가 등록되지 않았습니다." )
+                await i.response.send_message( "태스크가 등록되지 않았습니다.", ephemeral = True, delete_after = 10 )
                 return
 
             embed = TaskEmbed( task, self.bot.info )
             await self.bot.info.channel_log.send( embed = embed, view = TaskEmbedView( embed ) )
-            await i.response.send_message( "태스크가 등록되었습니다." )
+            await i.response.send_message( "태스크가 등록되었습니다.", ephemeral = True, delete_after = 10 )
 
 
     @discord.app_commands.command( name = "태스크_완료", description = "진행 중인 태스크를 전부 완료합니다." )
@@ -50,7 +50,7 @@ class RegisterTaskCog( Cog ):
             json.dump( [], f )
 
         await updateTimetable( i.client ) # type: ignore
-        await i.response.send_message( "태스크 완료됨" )
+        await i.response.send_message( "태스크 완료됨", ephemeral = True, delete_after = 10 )
 
 
     @discord.app_commands.command( name = "태스크_중단", description = "진행 중인 태스크를 전부 중단합니다." )
@@ -58,4 +58,4 @@ class RegisterTaskCog( Cog ):
         with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
             json.dump( [], f )
 
-        await i.response.send_message( "태스크 중단됨" )
+        await i.response.send_message( "태스크 중단됨", ephemeral = True, delete_after = 10 )

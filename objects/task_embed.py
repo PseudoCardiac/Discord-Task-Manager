@@ -41,7 +41,7 @@ class FinishButton( discord.ui.Button ):
     async def callback( self, interaction: discord.Interaction ):
         result = self.parentEmbed.task.pop()
         if result is False:
-            await interaction.response.send_message( "태스크를 찾지 못함" )
+            await interaction.response.send_message( "태스크를 찾지 못함", ephemeral = True, delete_after = 10 )
             return
 
         # ===== 원본 메시지 수정 =====
@@ -58,7 +58,7 @@ class FinishButton( discord.ui.Button ):
 
         result.record()
         await updateTimetable( interaction.client ) # type: ignore
-        await interaction.response.send_message( "태스크 완료됨" )
+        await interaction.response.send_message( "태스크 완료됨", ephemeral = True, delete_after = 10 )
 
 
 class TextEditButton( discord.ui.Button ):
@@ -88,11 +88,11 @@ class TextEditModal( discord.ui.Modal ):
 
     async def on_submit( self, i: discord.Interaction ):
         if not self.name and not self.desc:
-            await i.response.send_message( "태스크가 수정되지 않았습니다." )
+            await i.response.send_message( "태스크가 수정되지 않았습니다.", ephemeral = True, delete_after = 10 )
         else:
             self.button.parentEmbed.task.edit( name = self.name.value, desc = self.desc.value )
             await i.message.edit( embed = TaskEmbed( self.button.parentEmbed.task, i.client.info ) )    # type: ignore
-            await i.response.send_message( "태스크가 수정되었습니다." )
+            await i.response.send_message( "태스크가 수정되었습니다.", ephemeral = True, delete_after = 10 )
 
 
 class CategoryEditButton( discord.ui.Button ):
@@ -105,7 +105,7 @@ class CategoryEditButton( discord.ui.Button ):
 
 
     async def callback( self, interaction: discord.Interaction ):
-        await interaction.response.send_message( view = CategoryEditView( self, interaction.message ) ) # type: ignore
+        await interaction.response.send_message( view = CategoryEditView( self, interaction.message ), ephemeral = True, delete_after = 10 ) # type: ignore
 
 
 class CategoryEditView( discord.ui.View ):
@@ -126,12 +126,12 @@ class CategorySelect( discord.ui.RoleSelect ):
         category = self.values[0]
 
         if category not in interaction.client.info.tag: # type: ignore
-            await interaction.response.send_message( "잘못된 카테고리입니다." )
+            await interaction.response.send_message( "잘못된 카테고리입니다.", ephemeral = True, delete_after = 10 )
             return
 
         self.button.parentEmbed.task.edit( category = Category( interaction.client.info.tag.index( category ) ) )   # type: ignore
         await self.msg.edit( embed = TaskEmbed( self.button.parentEmbed.task, interaction.client.info ) )    # type: ignore
-        await interaction.response.send_message( "태스크가 수정되었습니다." )
+        await interaction.response.send_message( "태스크가 수정되었습니다.", ephemeral = True, delete_after = 10 )
 
 
 class AbortButton( discord.ui.Button ):
@@ -145,7 +145,7 @@ class AbortButton( discord.ui.Button ):
     async def callback( self, interaction: discord.Interaction ):
         result = self.parentEmbed.task.pop()
         if result is False:
-            await interaction.response.send_message( "태스크를 찾지 못함" )
+            await interaction.response.send_message( "태스크를 찾지 못함", ephemeral = True, delete_after = 10 )
             return
 
         # ===== 원본 메시지 수정 =====
@@ -159,4 +159,4 @@ class AbortButton( discord.ui.Button ):
         await interaction.message.edit( embed = embed, view = self.view )  # type: ignore
         # ============================
 
-        await interaction.response.send_message( "태스크 중단됨" )
+        await interaction.response.send_message( "태스크 중단됨", ephemeral = True, delete_after = 10 )

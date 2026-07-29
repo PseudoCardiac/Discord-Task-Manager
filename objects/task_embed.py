@@ -42,7 +42,7 @@ class FinishButton( discord.ui.Button ):
         async def confirm( i: discord.Interaction ):
             result = self.parentEmbed.task.pop()
             if result is False:
-                await interaction.response.send_message( "태스크를 찾지 못함", ephemeral = True, delete_after = 10 )
+                await i.response.send_message( "태스크를 찾지 못함", ephemeral = True, delete_after = 10 )
                 return
 
             # ===== 원본 메시지 수정 =====
@@ -153,7 +153,7 @@ class AbortButton( discord.ui.Button ):
         async def confirm( i: discord.Interaction ):
             result = self.parentEmbed.task.pop()
             if result is False:
-                await interaction.response.send_message( "태스크를 찾지 못함", ephemeral = True, delete_after = 10 )
+                await i.response.send_message( "태스크를 찾지 못함", ephemeral = True, delete_after = 10 )
                 return
 
             # ===== 원본 메시지 수정 =====

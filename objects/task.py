@@ -4,7 +4,7 @@ from objects import Category
 
 
 class Task:
-    def __init__( self, name: str, category: Category, desc = "", number = 0, start = None, end: datetime | None = None ):
+    def __init__( self, name: str, category: Category, desc = "", start = None, end: datetime | None = None ):
         self.name = name
         self.category = category
         self.desc = desc
@@ -41,7 +41,6 @@ class Task:
             name = d[ "name" ],
             category = Category( int( d[ "category" ] ) ),
             desc = d[ "desc" ],
-            number = int( d[ "number" ] ),
             start = datetime.strptime( d[ "start" ], "%d/%m/%Y, %H:%M:%S" ),
             end = datetime.strptime( d[ "end" ], "%d/%m/%Y, %H:%M:%S" ) if d[ "end" ] != "None" else None
         )
@@ -72,10 +71,23 @@ class Task:
         if not currentTasks:
             return False
 
-        try:
-            idx = currentTasks.index( jsonObj )
-        except ValueError:
+        idx = 0
+
+        for i in range( len( currentTasks ) ):
+            if currentTasks[i][ "name" ] == jsonObj[ "name" ] \
+            and currentTasks[i][ "category" ] == jsonObj[ "category" ] \
+            and currentTasks[i][ "desc" ] == jsonObj[ "desc" ] \
+            and currentTasks[i][ "start" ] == jsonObj[ "start" ] \
+            and currentTasks[i][ "end" ] == jsonObj[ "end" ]:
+                break
+            i += 1
+        else:
             return False
+
+        # try:
+        #     idx = currentTasks.index( jsonObj )
+        # except ValueError:
+        #     return False
 
         task = currentTasks.pop( idx )
 
@@ -108,11 +120,11 @@ class Task:
         """
         self.pop()
 
-        if name is not "":
+        if name != "":
             self.name = name
         if category is not None:
             self.category = category
-        if desc is not "":
+        if desc != "":
             self.desc = desc
 
         self.push()

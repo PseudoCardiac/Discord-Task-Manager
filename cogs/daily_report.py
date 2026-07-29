@@ -2,7 +2,11 @@ import discord, datetime, json
 from zoneinfo import ZoneInfo
 from discord.ext import tasks
 from discord.ext.commands import Cog
-from utils import genChart
+from utils import genChart, updateTimetable
+from utils.cut_current_tasks import cutCurrentTasks
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from bot import Faust
 
 
 MIDNIGHT = datetime.time(
@@ -12,12 +16,17 @@ MIDNIGHT = datetime.time(
 
 
 class DailyReportCog( Cog ):
-    def __init__( self, reportChannel: discord.TextChannel ):
-        self.reportChannel = reportChannel
+    def __init__( self, faust: "Faust" ):
+        self.faust = faust
+        self.reportChannel = faust.info.channel_log
+
+        self.dailyReport.start()
 
 
     @tasks.loop( time = MIDNIGHT )
     async def dailyReport( self ):
+        cutCurrentTasks()
+
         genChart()
 
         with open( "tt.png", 'rb' ) as f:
@@ -28,3 +37,4 @@ class DailyReportCog( Cog ):
             json.dump( {}, f )
 
         await self.reportChannel.send( file = chart )
+        await updateTimetable( self.faust )

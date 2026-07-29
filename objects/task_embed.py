@@ -1,7 +1,9 @@
 import discord, re
 from datetime import datetime
-from objects.info import Info
-from objects.task import Task
+from objects import Info, Category
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from objects import Task
 from utils import minutesToHours, updateTimetable
 
 
@@ -9,7 +11,7 @@ weekdays = [ '월', '화', '수', '목', '금', '토', '일' ]
 
 
 class TaskEmbed( discord.Embed ):
-    def __init__( self, task: Task, info: Info ):
+    def __init__( self, task: "Task", info: Info ):
         super().__init__(
             title = task.name,
             description = f"{ task.desc }\n<@&{ info.tag[ task.category ].id }> · <t:{ round( task.start.timestamp() ) }:R> 시작",
@@ -23,6 +25,8 @@ class TaskEmbedView( discord.ui.View ):
     def __init__( self, parentEmbed: TaskEmbed ):
         super().__init__( timeout = None )
         self.add_item( FinishButton( parentEmbed ) )
+        self.add_item( TextEditButton( parentEmbed ) )
+        self.add_item( CategoryEditButton( parentEmbed ) )
         self.add_item( AbortButton( parentEmbed ) )
 
 
@@ -55,6 +59,79 @@ class FinishButton( discord.ui.Button ):
         result.record()
         await updateTimetable( interaction.client ) # type: ignore
         await interaction.response.send_message( "태스크 완료됨" )
+
+
+class TextEditButton( discord.ui.Button ):
+    def __init__( self, parentEmbed: TaskEmbed ):
+        super().__init__(
+            style = discord.ButtonStyle.secondary,
+            label = "제목 · 세부 사항 수정"
+        )
+        self.parentEmbed = parentEmbed
+
+
+    async def callback( self, interaction: discord.Interaction ):
+        await interaction.response.send_modal( TextEditModal( self ) )
+
+
+class TextEditModal( discord.ui.Modal ):
+    def __init__( self, button: TextEditButton ):
+        super().__init__(
+            title = "태스크 제목 · 세부 사항 수정",
+            timeout = None
+        )
+        self.button = button
+
+    name = discord.ui.TextInput( label = "태스크 제목", style = discord.TextStyle.short, required = False )
+    desc = discord.ui.TextInput( label = "태스크 세부 사항", style = discord.TextStyle.short, required = False )
+
+
+    async def on_submit( self, i: discord.Interaction ):
+        if not self.name and not self.desc:
+            await i.response.send_message( "태스크가 수정되지 않았습니다." )
+        else:
+            self.button.parentEmbed.task.edit( name = self.name.value, desc = self.desc.value )
+            await i.message.edit( embed = TaskEmbed( self.button.parentEmbed.task, i.client.info ) )    # type: ignore
+            await i.response.send_message( "태스크가 수정되었습니다." )
+
+
+class CategoryEditButton( discord.ui.Button ):
+    def __init__( self, parentEmbed: TaskEmbed ):
+        super().__init__(
+            style = discord.ButtonStyle.secondary,
+            label = "카테고리 수정"
+        )
+        self.parentEmbed = parentEmbed
+
+
+    async def callback( self, interaction: discord.Interaction ):
+        await interaction.response.send_message( view = CategoryEditView( self, interaction.message ) ) # type: ignore
+
+
+class CategoryEditView( discord.ui.View ):
+    def __init__( self, button: CategoryEditButton, msg: discord.Message ):
+        super().__init__( timeout = None )
+
+        self.add_item( CategorySelect( button, msg ) )
+
+
+class CategorySelect( discord.ui.RoleSelect ):
+    def __init__( self, button: CategoryEditButton, msg: discord.Message ):
+        super().__init__()
+        self.button = button
+        self.msg = msg
+
+
+    async def callback( self, interaction: discord.Interaction ):
+        category = self.values[0]
+
+        if category not in interaction.client.info.tag: # type: ignore
+            await interaction.response.send_message( "잘못된 카테고리입니다." )
+            return
+
+        self.button.parentEmbed.task.edit( category = Category( interaction.client.info.tag.index( category ) ) )   # type: ignore
+        await self.msg.edit( embed = TaskEmbed( self.button.parentEmbed.task, interaction.client.info ) )    # type: ignore
+        await interaction.response.send_message( "태스크가 수정되었습니다." )
 
 
 class AbortButton( discord.ui.Button ):

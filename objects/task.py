@@ -100,3 +100,19 @@ class Task:
 
         with open( "data/today.json", 'w', encoding = "UTF-8" ) as f:
             json.dump( today, f, indent = 4 )
+
+
+    def edit( self, name = "", category = None, desc = "" ):
+        """
+        self의 name, category, 또는 desc를 수정한다
+        """
+        self.pop()
+
+        if name is not "":
+            self.name = name
+        if category is not None:
+            self.category = category
+        if desc is not "":
+            self.desc = desc
+
+        self.push()

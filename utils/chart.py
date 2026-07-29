@@ -30,15 +30,15 @@ def genChart( date: str | None = None ):
     colors: list[ str ] = []
 
     colorsDict = {
-        "1": "#c72323A0",
-        "2": "#ff8d2aA0",
-        "3": "#ffec36A0",
-        "4": "#96cc2eA0",
-        "5": "#8aefffA0",
-        "6": "#e1b6ffA0",
-        "7": "#ff59a1A0",
-        "8": "#7494a5A0",
-        "9": "#898989A0"
+        "0": "#c72323A0",
+        "1": "#ff8d2aA0",
+        "2": "#ffec36A0",
+        "3": "#96cc2eA0",
+        "4": "#8aefffA0",
+        "5": "#e1b6ffA0",
+        "6": "#ff59a1A0",
+        "7": "#7494a5A0",
+        "8": "#898989A0"
     }
 
     for task in tasksDict if tasksDict is not None else []:

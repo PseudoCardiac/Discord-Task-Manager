@@ -47,7 +47,7 @@ class RegisterTaskCog( Cog ):
             task.record()
 
         with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
-            json.dump( {}, f )
+            json.dump( [], f )
 
         await updateTimetable( i.client ) # type: ignore
         await i.response.send_message( "태스크 완료됨" )
@@ -56,6 +56,6 @@ class RegisterTaskCog( Cog ):
     @discord.app_commands.command( name = "태스크_중단", description = "진행 중인 태스크를 전부 중단합니다." )
     async def abortTask( self, i: discord.Interaction ):
         with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
-            json.dump( {}, f )
+            json.dump( [], f )
 
         await i.response.send_message( "태스크 중단됨" )

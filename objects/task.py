@@ -27,8 +27,8 @@ class Task:
         obj[ "category" ] = str( self.category )
         obj[ "desc" ] = self.desc
         obj[ "number" ] = str( self.number )
-        obj[ "start" ] = self.start.strftime( "%Y/%m/%d %H:%M:%S" )
-        obj[ "end" ] = self.end.strftime( "%Y/%m/%d %H:%M:%S" ) if self.end is not None else "None"
+        obj[ "start" ] = self.start.strftime( "%Y/%m/%d %H:%M:%S %Z" )
+        obj[ "end" ] = self.end.strftime( "%Y/%m/%d %H:%M:%S %Z" ) if self.end is not None else "None"
 
         return obj
 
@@ -42,8 +42,8 @@ class Task:
             name = d[ "name" ],
             category = Category( int( d[ "category" ] ) ),
             desc = d[ "desc" ],
-            start = datetime.strptime( d[ "start" ], "%Y/%m/%d %H:%M:%S" ).astimezone( ZoneInfo( "Asia/Seoul" ) ),
-            end = datetime.strptime( d[ "end" ], "%Y/%m/%d %H:%M:%S" ).astimezone( ZoneInfo( "Asia/Seoul" ) ) if d[ "end" ] != "None" else None
+            start = datetime.strptime( d[ "start" ], "%Y/%m/%d %H:%M:%S %Z" ),
+            end = datetime.strptime( d[ "end" ], "%Y/%m/%d %H:%M:%S %Z" ) if d[ "end" ] != "None" else None
         )
 
 

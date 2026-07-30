@@ -47,8 +47,8 @@ def genChart( date: str | None = None ):
         taskNames.append( task[ "name" ] )
         taskDescs.append( task[ "desc" ] )
         colors.append( colorsDict[ task[ "category" ] ] )
-        startTime = datetime.datetime.strptime( task[ "start" ], "%Y/%m/%d %H:%M:%S" ).astimezone( ZoneInfo( "Asia/Seoul" ) )
-        endTime = datetime.datetime.strptime( task[ "end" ], "%Y/%m/%d %H:%M:%S" ).astimezone( ZoneInfo( "Asia/Seoul" ) )
+        startTime = datetime.datetime.strptime( task[ "start" ], "%Y/%m/%d %H:%M:%S %Z" )
+        endTime = datetime.datetime.strptime( task[ "end" ], "%Y/%m/%d %H:%M:%S %Z" )
         startTimes.append( startTime )
         endTimes.append( endTime )
         durations.append( endTime - startTime )
@@ -63,8 +63,8 @@ def genChart( date: str | None = None ):
     ax.xaxis_date()
 
     # x축 범위 정의
-    ax.set_xlim( left = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).replace( hour = 0, minute = 0, second = 0, microsecond = 0 ).astimezone( ZoneInfo( "Asia/Seoul" ) ), # type: ignore
-                right = ( datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) + datetime.timedelta( days = 1 ) ).replace( hour = 0, minute = 1, second = 0, microsecond = 0 ).astimezone( ZoneInfo( "Asia/Seoul" ) ) ) # type: ignore
+    ax.set_xlim( left = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).replace( hour = 0, minute = 0, second = 0, microsecond = 0 ), # type: ignore
+                right = ( datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) + datetime.timedelta( days = 1 ) ).replace( hour = 0, minute = 1, second = 0, microsecond = 0 ) ) # type: ignore
 
     # 막대 그리기
     ax.barh( y = taskIndices, width = durations, left = startTimes, height = 0.8, color = colors ) # type: ignore

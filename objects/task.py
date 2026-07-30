@@ -42,8 +42,8 @@ class Task:
             name = d[ "name" ],
             category = Category( int( d[ "category" ] ) ),
             desc = d[ "desc" ],
-            start = datetime.strptime( d[ "start" ], "%Y/%m/%d %H:%M:%S" ),
-            end = datetime.strptime( d[ "end" ], "%Y/%m/%d %H:%M:%S" ) if d[ "end" ] != "None" else None
+            start = datetime.strptime( d[ "start" ], "%Y/%m/%d %H:%M:%S" ).astimezone( ZoneInfo( "Asia/Seoul" ) ),
+            end = datetime.strptime( d[ "end" ], "%Y/%m/%d %H:%M:%S" ).astimezone( ZoneInfo( "Asia/Seoul" ) ) if d[ "end" ] != "None" else None
         )
 
 

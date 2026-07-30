@@ -8,7 +8,7 @@ from matplotlib.ticker import AutoMinorLocator
 def genChart( date: str | None = None ):
     # 날짜 설정
     if date is None:
-        date = datetime.datetime.now().strftime( "%Y%m%d" )
+        date = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).strftime( "%Y%m%d" )
 
 
     # 한글 폰트 설정
@@ -47,8 +47,8 @@ def genChart( date: str | None = None ):
         taskNames.append( task[ "name" ] )
         taskDescs.append( task[ "desc" ] )
         colors.append( colorsDict[ task[ "category" ] ] )
-        startTime = datetime.datetime.strptime( task[ "start" ], "%Y/%m/%d %H:%M:%S" )
-        endTime = datetime.datetime.strptime( task[ "end" ], "%Y/%m/%d %H:%M:%S" )
+        startTime = datetime.datetime.strptime( task[ "start" ], "%Y/%m/%d %H:%M:%S" ).astimezone( ZoneInfo( "Asia/Seoul" ) )
+        endTime = datetime.datetime.strptime( task[ "end" ], "%Y/%m/%d %H:%M:%S" ).astimezone( ZoneInfo( "Asia/Seoul" ) )
         startTimes.append( startTime )
         endTimes.append( endTime )
         durations.append( endTime - startTime )
@@ -63,8 +63,8 @@ def genChart( date: str | None = None ):
     ax.xaxis_date()
 
     # x축 범위 정의
-    ax.set_xlim( left = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).replace( hour = 0, minute = 0, second = 0, microsecond = 0 ), # type: ignore
-                right = ( datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) + datetime.timedelta( days = 1 ) ).replace( hour = 0, minute = 1, second = 0, microsecond = 0 ) ) # type: ignore
+    ax.set_xlim( left = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).replace( hour = 0, minute = 0, second = 0, microsecond = 0 ).astimezone( ZoneInfo( "Asia/Seoul" ) ), # type: ignore
+                right = ( datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) + datetime.timedelta( days = 1 ) ).replace( hour = 0, minute = 1, second = 0, microsecond = 0 ).astimezone( ZoneInfo( "Asia/Seoul" ) ) ) # type: ignore
 
     # 막대 그리기
     ax.barh( y = taskIndices, width = durations, left = startTimes, height = 0.8, color = colors ) # type: ignore
@@ -74,7 +74,7 @@ def genChart( date: str | None = None ):
     ax.grid( axis = "x", which = "minor", ls = ":" )
 
     # 눈금 그리기
-    ax.xaxis.set_major_formatter( DateFormatter( "%H시" ) )
+    ax.xaxis.set_major_formatter( DateFormatter( "%H시", tz = ZoneInfo( "Asia/Seoul" ) ) )
     ax.xaxis.set_minor_locator( AutoMinorLocator( 3 ) )
     plt.tick_params( colors = "#ffffff" )
 

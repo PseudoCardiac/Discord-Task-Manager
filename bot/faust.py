@@ -2,7 +2,7 @@ import discord, os, json
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
 from objects import Info
-from cogs import RegisterTaskCog, DailyReportCog
+from cogs import RegisterTaskCog, DailyReportCog, ExportJsonCog
 
 
 class Faust( Bot ):
@@ -15,7 +15,8 @@ class Faust( Bot ):
         await self.info.init( self )
         await self.add_cog( RegisterTaskCog( self ) )
         await self.add_cog( DailyReportCog( self ) )
-        # await self.tree.sync()
+        await self.add_cog( ExportJsonCog( self ) )
+        await self.tree.sync()
         print( "파우스트 온라인." )
 
 

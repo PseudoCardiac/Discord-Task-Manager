@@ -26,16 +26,17 @@ class TaskEmbedView( discord.ui.View ):
     def __init__( self, parentEmbed: TaskEmbed ):
         super().__init__( timeout = None )
         self.add_item( FinishButton( parentEmbed ) )
+        self.add_item( AbortButton( parentEmbed ) )
         self.add_item( TextEditButton( parentEmbed ) )
         self.add_item( CategoryEditButton( parentEmbed ) )
-        self.add_item( AbortButton( parentEmbed ) )
 
 
 class FinishButton( discord.ui.Button ):
     def __init__( self, parentEmbed: TaskEmbed ):
         super().__init__(
             style = discord.ButtonStyle.primary,
-            label = "태스크 완료"
+            label = "태스크 완료",
+            row = 0
         )
         self.parentEmbed = parentEmbed
 
@@ -73,7 +74,8 @@ class TextEditButton( discord.ui.Button ):
     def __init__( self, parentEmbed: TaskEmbed ):
         super().__init__(
             style = discord.ButtonStyle.secondary,
-            label = "제목 · 세부 사항 수정"
+            label = "제목 · 세부 사항 수정",
+            row = 1
         )
         self.parentEmbed = parentEmbed
 
@@ -107,7 +109,8 @@ class CategoryEditButton( discord.ui.Button ):
     def __init__( self, parentEmbed: TaskEmbed ):
         super().__init__(
             style = discord.ButtonStyle.secondary,
-            label = "카테고리 수정"
+            label = "카테고리 수정",
+            row = 1
         )
         self.parentEmbed = parentEmbed
 
@@ -146,7 +149,8 @@ class AbortButton( discord.ui.Button ):
     def __init__( self, parentEmbed: TaskEmbed ):
         super().__init__(
             style = discord.ButtonStyle.danger,
-            label = "태스크 중단"
+            label = "태스크 중단",
+            row = 0
         )
         self.parentEmbed = parentEmbed
 

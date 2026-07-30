@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from objects import Category
 
 
@@ -8,7 +9,7 @@ class Task:
         self.name = name
         self.category = category
         self.desc = desc
-        self.start = datetime.now() if start is None else start
+        self.start = datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) if start is None else start
         with open( "data/today.json", 'r', encoding = "UTF-8" ) as f:
             today = json.load( f )
         todaysRecord = today.get( self.start.strftime( "%Y%m%d" ) ) or []
@@ -26,8 +27,8 @@ class Task:
         obj[ "category" ] = str( self.category )
         obj[ "desc" ] = self.desc
         obj[ "number" ] = str( self.number )
-        obj[ "start" ] = self.start.strftime( "%d/%m/%Y, %H:%M:%S" )
-        obj[ "end" ] = self.end.strftime( "%d/%m/%Y, %H:%M:%S" ) if self.end is not None else "None"
+        obj[ "start" ] = self.start.strftime( "%Y/%m/%d %H:%M:%S" )
+        obj[ "end" ] = self.end.strftime( "%Y/%m/%d %H:%M:%S" ) if self.end is not None else "None"
 
         return obj
 
@@ -41,8 +42,8 @@ class Task:
             name = d[ "name" ],
             category = Category( int( d[ "category" ] ) ),
             desc = d[ "desc" ],
-            start = datetime.strptime( d[ "start" ], "%d/%m/%Y, %H:%M:%S" ),
-            end = datetime.strptime( d[ "end" ], "%d/%m/%Y, %H:%M:%S" ) if d[ "end" ] != "None" else None
+            start = datetime.strptime( d[ "start" ], "%Y/%m/%d %H:%M:%S" ),
+            end = datetime.strptime( d[ "end" ], "%Y/%m/%d %H:%M:%S" ) if d[ "end" ] != "None" else None
         )
 
 
@@ -104,7 +105,7 @@ class Task:
         with open( "data/today.json", 'r', encoding = "UTF-8" ) as f:
             today = json.load( f )
 
-        self.end = datetime.now()
+        self.end = datetime.now( tz = ZoneInfo( "Asia/Seoul" ) )
         if today.get( self.start.strftime( "%Y%m%d" ) ):    # 오늘 기록이 있음
             today[ self.start.strftime( "%Y%m%d" ) ].append( self.toJsonObj() )
         else:   # 오늘 기록이 없음

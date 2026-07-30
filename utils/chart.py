@@ -1,4 +1,5 @@
 import datetime, json
+from zoneinfo import ZoneInfo
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 from matplotlib.ticker import AutoMinorLocator
@@ -46,8 +47,8 @@ def genChart( date: str | None = None ):
         taskNames.append( task[ "name" ] )
         taskDescs.append( task[ "desc" ] )
         colors.append( colorsDict[ task[ "category" ] ] )
-        startTime = datetime.datetime.strptime( task[ "start" ], "%d/%m/%Y, %H:%M:%S" )
-        endTime = datetime.datetime.strptime( task[ "end" ], "%d/%m/%Y, %H:%M:%S" )
+        startTime = datetime.datetime.strptime( task[ "start" ], "%Y/%m/%d %H:%M:%S" )
+        endTime = datetime.datetime.strptime( task[ "end" ], "%Y/%m/%d %H:%M:%S" )
         startTimes.append( startTime )
         endTimes.append( endTime )
         durations.append( endTime - startTime )
@@ -62,8 +63,8 @@ def genChart( date: str | None = None ):
     ax.xaxis_date()
 
     # x축 범위 정의
-    ax.set_xlim( left = datetime.datetime.now().replace( hour = 0, minute = 0, second = 0, microsecond = 0 ), # type: ignore
-                right = ( datetime.datetime.now() + datetime.timedelta( days = 1 ) ).replace( hour = 0, minute = 1, second = 0, microsecond = 0 ) ) # type: ignore
+    ax.set_xlim( left = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).replace( hour = 0, minute = 0, second = 0, microsecond = 0 ), # type: ignore
+                right = ( datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) + datetime.timedelta( days = 1 ) ).replace( hour = 0, minute = 1, second = 0, microsecond = 0 ) ) # type: ignore
 
     # 막대 그리기
     ax.barh( y = taskIndices, width = durations, left = startTimes, height = 0.8, color = colors ) # type: ignore

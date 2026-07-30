@@ -1,4 +1,5 @@
 import discord, datetime
+from zoneinfo import ZoneInfo
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bot import Faust
@@ -6,7 +7,7 @@ from utils import genChart
 
 
 async def updateTimetable( faust: "Faust" ):
-    embed = discord.Embed( title = datetime.datetime.now().strftime( "%Y%m%d" ) )
+    embed = discord.Embed( title = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).strftime( "%Y%m%d" ) )
 
     genChart()
 

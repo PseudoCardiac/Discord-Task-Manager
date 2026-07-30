@@ -1,4 +1,5 @@
 import json, datetime
+from zoneinfo import ZoneInfo
 from objects import Task
 
 
@@ -6,7 +7,7 @@ def cutCurrentTasks():
     with open( "data/current_tasks.json", 'r', encoding = "UTF-8" ) as f:
         currentTasks: list[ dict[ str, str ] ] = json.load( f )
 
-    now = datetime.datetime.now()
+    now = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) )
 
     for currentTask in currentTasks:
         taskLeft = Task.toTaskObj( currentTask )

@@ -1,5 +1,6 @@
 import discord, re
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from objects import Info, Category
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -46,7 +47,7 @@ class FinishButton( discord.ui.Button ):
                 return
 
             # ===== 원본 메시지 수정 =====
-            minutes = round( ( datetime.now() - result.start ).total_seconds() ) // 60
+            minutes = round( ( datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) - result.start ).total_seconds() ) // 60
             durationString = minutesToHours( minutes )
             embed = interaction.message.embeds[0]   # type: ignore
             embed.description = re.sub( r"<t:\d+:R> 시작", f"{ durationString }동안 작업", str( embed.description ) )

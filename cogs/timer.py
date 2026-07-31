@@ -1,9 +1,10 @@
+import discord
 from discord.ext import tasks
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bot import Faust
     from objects import Task
-from utils import notify
+# from objects import NotificationView
 
 
 def newTimer( min: int, task: "Task", faust: "Faust" ):
@@ -12,6 +13,10 @@ def newTimer( min: int, task: "Task", faust: "Faust" ):
         if timer.current_loop == 0:
             return
 
-        await notify( task, faust )
+        taskExists = task.exists()
+        if not taskExists:
+            return
+
+        await faust.info.channel_log.send( f"<@{ faust.info.scy.id }> 알림: { task.name }" )
 
     return timer

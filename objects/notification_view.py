@@ -7,26 +7,28 @@ if TYPE_CHECKING:
 
 
 class NotifyLaterModal( discord.ui.Modal ):
-    def __init__( self, task: "Task" ):
+    def __init__( self, task: "Task", action ):
         self.task = task
+        self.action = action
 
     minutes = discord.ui.Label( text = "다시 알릴 시간 (분)", component = discord.ui.TextInput() )
 
     async def on_submit( self, interaction: discord.Interaction ):
-        newTimer( int( self.minutes ), self.task , interaction.client ).start()
+        self.action( self.minutes )
         await interaction.response.send_message( f"{ self.minutes }분 후 다시 알림" )
 
 
 class NotifyLaterButton( discord.ui.Button ):
-    def __init__( self, task: "Task" ):
+    def __init__( self, task: "Task", action ):
         super().__init__(
             style = discord.ButtonStyle.primary,
             label = "다시 알림"
         )
         self.task = task
+        self.action = action
 
     async def callback( self, interaction: discord.Interaction ):
-        await interaction.response.send_modal( NotifyLaterModal( self.task ) )
+        await interaction.response.send_modal( NotifyLaterModal( self.task, self.action ) )
 
 
 class NotifyHideButton( discord.ui.Button ):
@@ -41,8 +43,8 @@ class NotifyHideButton( discord.ui.Button ):
 
 
 class NotificationView( discord.ui.View ):
-    def __init__( self, task: "Task" ):
+    def __init__( self, task: "Task", action ):
         super().__init__( timeout = None )
 
-        self.add_item( NotifyLaterButton( task ) )
+        self.add_item( NotifyLaterButton( task, action ) )
         self.add_item( NotifyHideButton() )

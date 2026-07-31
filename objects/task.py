@@ -98,6 +98,32 @@ class Task:
         return Task.toTaskObj( task )
 
 
+    def exists( self ):
+        """
+        현재 기록 중인 태스크 목록에 self가 존재하는지 여부를 반환한다
+        """
+        jsonObj = self.toJsonObj()
+
+        with open( "data/current_tasks.json", 'r', encoding = "UTF-8" ) as f:
+            currentTasks: list[ dict[ str, str ] ] = json.load( f )
+
+        if not currentTasks:
+            return False
+
+        idx = 0
+
+        for i in range( len( currentTasks ) ):
+            if currentTasks[i][ "name" ] == jsonObj[ "name" ] \
+            and currentTasks[i][ "category" ] == jsonObj[ "category" ] \
+            and currentTasks[i][ "desc" ] == jsonObj[ "desc" ] \
+            and currentTasks[i][ "start" ] == jsonObj[ "start" ] \
+            and currentTasks[i][ "end" ] == jsonObj[ "end" ]:
+                return True
+            i += 1
+
+        return False
+
+
     def record( self ):
         """
         self의 종료 시간을 현재 시간으로 설정하고 오늘의 기록에 추가한다

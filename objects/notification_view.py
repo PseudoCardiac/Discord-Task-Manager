@@ -1,5 +1,4 @@
 import discord
-from cogs import newTimer
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bot import Faust
@@ -8,14 +7,18 @@ if TYPE_CHECKING:
 
 class NotifyLaterModal( discord.ui.Modal ):
     def __init__( self, task: "Task", action ):
+        super().__init__(
+            title = "다시 알림",
+            timeout = None
+        )
         self.task = task
         self.action = action
 
-    minutes = discord.ui.Label( text = "다시 알릴 시간 (분)", component = discord.ui.TextInput() )
+    minutes = discord.ui.TextInput( label = "다시 알릴 시간 (분)", style = discord.TextStyle.short )
 
     async def on_submit( self, interaction: discord.Interaction ):
-        self.action( self.minutes )
-        await interaction.response.send_message( f"{ self.minutes }분 후 다시 알림" )
+        await interaction.response.send_message( f"{ self.minutes.value }분 후 다시 알림", ephemeral = True, delete_after = 10 )
+        await self.action( int( self.minutes.value ), self.task, interaction.client )
 
 
 class NotifyLaterButton( discord.ui.Button ):

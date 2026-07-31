@@ -39,10 +39,10 @@ class ExportJsonCog( Cog ):
                 f.write( b )
 
         else:
-            await i.response.send_message( "잘못된 선택" )
+            await i.response.send_message( "잘못된 선택", ephemeral = True, delete_after = 10 )
             return
 
-        await i.response.send_message( "파일 불러옴" )
+        await i.response.send_message( "파일 불러옴", ephemeral = True, delete_after = 10 )
 
 
     @discord.app_commands.command( name = "초기화", description = "JSON 파일을 초기화한다" )
@@ -55,4 +55,4 @@ class ExportJsonCog( Cog ):
 
         genChart()
 
-        await i.response.send_message( "JSON 초기화됨" )
+        await i.response.send_message( "JSON 초기화됨", ephemeral = True, delete_after = 10 )

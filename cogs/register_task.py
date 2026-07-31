@@ -3,9 +3,9 @@ from discord.ext.commands import Cog
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bot import Faust
-from objects import Task, Category, TaskEmbed, TaskEmbedView
+from objects import Task, Category, TaskEmbed, TaskEmbedView, NotificationView
 from utils import updateTimetable
-from .timer import newTimer
+from .timer import setTimer
 
 
 class RegisterTaskCog( Cog ):
@@ -38,7 +38,7 @@ class RegisterTaskCog( Cog ):
             await self.bot.info.channel_log.send( embed = embed, view = TaskEmbedView( embed ) )
             await i.response.send_message( "태스크가 등록되었습니다.", ephemeral = True, delete_after = 10 )
             if min:
-                newTimer( min, task, i.client ).start()
+                await setTimer( min, task, i.client )
 
 
     @discord.app_commands.command( name = "태스크_완료", description = "진행 중인 태스크를 전부 완료합니다." )

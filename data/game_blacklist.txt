@@ -1,0 +1,4 @@
+Clip Studio PAIN
+Microsoft Visual Studio
+Visual Studio Code
+Aseprite

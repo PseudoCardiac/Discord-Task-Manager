@@ -1,10 +1,11 @@
 import discord, re
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from objects import Info, Category
+from .info import Info
+from .category import Category
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from objects import Task
+    from .task import Task
 from utils import minutesToHours, updateTimetable
 
 

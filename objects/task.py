@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from objects import Category
+from .category import Category
 
 
 class Task:

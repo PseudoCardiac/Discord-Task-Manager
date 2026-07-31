@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from bot import Faust
 from objects import Task, Category, TaskEmbed, TaskEmbedView
 from utils import updateTimetable
+from .timer import newTimer
 
 
 class RegisterTaskCog( Cog ):
@@ -15,7 +16,8 @@ class RegisterTaskCog( Cog ):
     @discord.app_commands.rename( name = "제목" )
     @discord.app_commands.rename( desc = "세부사항" )
     @discord.app_commands.rename( category = "카테고리" )
-    async def registerTask( self, i: discord.Interaction, name: str, category: discord.Role, desc: str = "" ):
+    @discord.app_commands.rename( min = "예상_소요_시간_분" )
+    async def registerTask( self, i: discord.Interaction, name: str, category: discord.Role, desc: str = "", min: int = 0 ):
         try:
             categoryObj = Category( self.bot.info.tag.index( category ) )
         except ValueError:
@@ -35,6 +37,9 @@ class RegisterTaskCog( Cog ):
             embed = TaskEmbed( task, self.bot.info )
             await self.bot.info.channel_log.send( embed = embed, view = TaskEmbedView( embed ) )
             await i.response.send_message( "태스크가 등록되었습니다.", ephemeral = True, delete_after = 10 )
+            if min:
+                t = newTimer( min, task, i.client )   # type: ignore
+                t.start()
 
 
     @discord.app_commands.command( name = "태스크_완료", description = "진행 중인 태스크를 전부 완료합니다." )

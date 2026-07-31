@@ -3,7 +3,7 @@ from zoneinfo import ZoneInfo
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bot import Faust
-from utils import genChart
+from .chart import genChart
 
 
 async def updateTimetable( faust: "Faust" ):

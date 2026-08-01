@@ -1,7 +1,7 @@
 import discord, json
 from discord.ext.commands import Cog
 from typing import Literal
-from utils import genChart
+from utils import genChart, updateTimetable
 
 
 class ExportJsonCog( Cog ):
@@ -56,3 +56,11 @@ class ExportJsonCog( Cog ):
         genChart()
 
         await i.response.send_message( "JSON 초기화됨", ephemeral = True, delete_after = 10 )
+
+
+    @discord.app_commands.command( name = "새로고침", description = "대시보드를 새로고침한다" )
+    async def refreshDashboard( self, i: discord.Interaction ):
+        genChart()
+        await updateTimetable( i.client )   # type: ignore
+
+        await i.response.send_message( "대시보드 새로고침", ephemeral = True, delete_after = 10 )

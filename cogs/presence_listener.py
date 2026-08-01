@@ -14,6 +14,8 @@ class PresenceListener( Cog ):
         with open( "data/game_blacklist.txt", 'r', encoding = "UTF-8" ) as f:
             self.blacklist = f.readlines()
 
+        self.blacklist = [ name.rstrip() for name in self.blacklist ]
+
 
     @Cog.listener( name = "on_presence_update" )
     async def on_presence_update( self, before: discord.Member, after: discord.Member ):

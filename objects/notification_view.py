@@ -1,7 +1,7 @@
 import discord
+from utils import minutesToHours
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from bot import Faust
     from .task import Task
 
 
@@ -17,7 +17,7 @@ class NotifyLaterModal( discord.ui.Modal ):
     minutes = discord.ui.TextInput( label = "다시 알릴 시간 (분)", style = discord.TextStyle.short )
 
     async def on_submit( self, interaction: discord.Interaction ):
-        await interaction.response.send_message( f"{ self.minutes.value }분 후 다시 알림", ephemeral = True, delete_after = 10 )
+        await interaction.response.send_message( f"{ minutesToHours( int( self.minutes.value ) ) } 후 다시 알림", ephemeral = True, delete_after = 10 )
         await self.action( int( self.minutes.value ), self.task, interaction.client )
 
 

@@ -8,7 +8,7 @@ from objects import NotificationView
 
 
 async def setTimer( min: int, task: "Task", faust: "Faust" ):
-    @tasks.loop( seconds = float( min ), count = 2 ) # TODO change seconds to minutes after testing
+    @tasks.loop( minutes = float( min ), count = 2 )
     async def timer():
         if timer.current_loop == 0:
             return

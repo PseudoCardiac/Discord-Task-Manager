@@ -5,10 +5,12 @@ from matplotlib.dates import DateFormatter
 from matplotlib.ticker import AutoMinorLocator
 
 
-def genChart( date: str | None = None ):
+def genChart( dt: datetime.datetime | None = None ):
     # 날짜 설정
-    if date is None:
+    if dt is None:
         date = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).strftime( "%Y%m%d" )
+    else:
+        date = dt.strftime( "%Y%m%d" )
 
 
     # 한글 폰트 설정

@@ -27,7 +27,7 @@ class DailyReportCog( Cog ):
     async def dailyReport( self ):
         cutCurrentTasks()
 
-        genChart()
+        genChart( datetime.datetime.now() - datetime.timedelta( days = 1 ) )
 
         with open( "tt.png", 'rb' ) as f:
             chart = discord.File( f )

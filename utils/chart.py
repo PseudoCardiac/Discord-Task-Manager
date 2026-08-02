@@ -45,7 +45,7 @@ def genChart( dt: datetime.datetime | None = None ):
     }
 
     for task in tasksDict if tasksDict is not None else []:
-        taskIndices.append( task[ "number" ] )
+        taskIndices.append( task[ "id" ] )
         taskNames.append( task[ "name" ] )
         taskDescs.append( task[ "desc" ] )
         colors.append( colorsDict[ task[ "category" ] ] )
@@ -92,7 +92,7 @@ def genChart( dt: datetime.datetime | None = None ):
     # 막대 위에 태스크 이름 그리기
     for i in range( len( taskIndices ) ):
         ax.text( startTimes[i], i, f"  {taskNames[i]}", ha = "left", va = "center", color = "white", fontsize = 14, fontweight = "bold" ) # type: ignore
-        ax.text( startTimes[i], i + 0.4, f"  {taskDescs[i]}", ha = "left", va = "center", color = "white", fontsize = 12, fontweight = "light" ) # type: ignore
+        ax.text( startTimes[i], i + 0.25, f"  {taskDescs[i]}", ha = "left", va = "center", color = "white", fontsize = 12, fontweight = "light" ) # type: ignore
 
     # 수직 정렬 뒤집기
     plt.gca().invert_yaxis()

@@ -15,7 +15,7 @@ class Task:
         todaysRecord = today.get( self.start.strftime( "%Y%m%d" ) ) or []
         self.number = len( todaysRecord ) + 1
         self.end = end
-        self.ID = self.start.strftime( "%Y%m%d" ) + str( ord( name[0] ) ) if id is None else id
+        self.ID = self.start.strftime( "%Y%m%d%H%M%S" ) + str( ord( name[0] ) ) if id is None else id
 
 
     def toJsonObj( self ):

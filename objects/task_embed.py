@@ -45,14 +45,14 @@ class FinishButton( discord.ui.Button ):
         async def confirm( i: discord.Interaction ):
             result = self.parentEmbed.task.pop()
             if result is False:
-                await i.response.send_message( "태스크를 찾지 못함", ephemeral = True, delete_after = 10 )
+                await i.response.send_message( "태스크를 찾지 못했습니다. 무언가 잘못되었군요.", ephemeral = True, delete_after = 10 )
                 return
 
             # ===== 원본 메시지 수정 =====
             minutes = round( ( datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) - result.start ).total_seconds() ) // 60
             durationString = minutesToHours( minutes )
             embed = interaction.message.embeds[0]   # type: ignore
-            embed.description = re.sub( r"<t:\d+:R> 시작", f"{ durationString }동안 작업", str( embed.description ) )
+            embed.description = re.sub( r"<t:\d+:R> 시작", f"{ durationString }동안 진행", str( embed.description ) )
 
             for item in self.view.children: # type: ignore
                 item.disabled = True
@@ -62,7 +62,7 @@ class FinishButton( discord.ui.Button ):
 
             result.record()
             await updateTimetable( interaction.client ) # type: ignore
-            await i.response.send_message( "태스크 완료됨", ephemeral = True, delete_after = 10 )
+            await i.response.send_message( "태스크가 완료되었습니다. 바람직한 현상이군요.", ephemeral = True, delete_after = 10 )
 
         async def cancel( i: discord.Interaction ):
             await i.response.defer()
@@ -99,11 +99,11 @@ class TextEditModal( discord.ui.Modal ):
 
     async def on_submit( self, i: discord.Interaction ):
         if not self.name and not self.desc:
-            await i.response.send_message( "태스크가 수정되지 않았습니다.", ephemeral = True, delete_after = 10 )
+            await i.response.send_message( "태스크가 수정되지 않았습니다. 무언가 잘못되었군요.", ephemeral = True, delete_after = 10 )
         else:
             self.button.parentEmbed.task.edit( name = self.name.value, desc = self.desc.value )
             await i.message.edit( embed = TaskEmbed( self.button.parentEmbed.task, i.client.info ) )    # type: ignore
-            await i.response.send_message( "태스크가 수정되었습니다.", ephemeral = True, delete_after = 10 )
+            await i.response.send_message( "태스크가 성공적으로 수정되었습니다.", ephemeral = True, delete_after = 10 )
 
 
 class CategoryEditButton( discord.ui.Button ):
@@ -138,12 +138,12 @@ class CategorySelect( discord.ui.RoleSelect ):
         category = self.values[0]
 
         if category not in interaction.client.info.tag: # type: ignore
-            await interaction.response.send_message( "잘못된 카테고리입니다.", ephemeral = True, delete_after = 10 )
+            await interaction.response.send_message( "…파우스트는 카테고리가 아닙니다.", ephemeral = True, delete_after = 10 )
             return
 
         self.button.parentEmbed.task.edit( category = Category( interaction.client.info.tag.index( category ) ) )   # type: ignore
         await self.msg.edit( embed = TaskEmbed( self.button.parentEmbed.task, interaction.client.info ) )    # type: ignore
-        await interaction.response.send_message( "태스크가 수정되었습니다.", ephemeral = True, delete_after = 10 )
+        await interaction.response.send_message( "태스크가 성공적으로 수정되었습니다.", ephemeral = True, delete_after = 10 )
 
 
 class AbortButton( discord.ui.Button ):
@@ -159,12 +159,15 @@ class AbortButton( discord.ui.Button ):
         async def confirm( i: discord.Interaction ):
             result = self.parentEmbed.task.pop()
             if result is False:
-                await i.response.send_message( "태스크를 찾지 못함", ephemeral = True, delete_after = 10 )
+                await i.response.send_message( "태스크를 찾지 못했습니다. 무언가 잘못되었군요.", ephemeral = True, delete_after = 10 )
                 return
 
             # ===== 원본 메시지 수정 =====
+
             embed = interaction.message.embeds[0]   # type: ignore
             embed.title = "~~" + str( embed.title ) + "~~"
+            nowTimestamp = round( datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).timestamp() )
+            embed.description = re.sub( r"<t:\d+:R> 시작", f"<t:{ nowTimestamp }:R> 중단", str( embed.description ) )
             embed.description = "~~" + str( embed.description ) + "~~"
 
             for item in self.view.children: # type: ignore
@@ -173,7 +176,7 @@ class AbortButton( discord.ui.Button ):
             await interaction.message.edit( embed = embed, view = self.view )  # type: ignore
             # ============================
 
-            await i.response.send_message( "태스크 중단됨", ephemeral = True, delete_after = 10 )
+            await i.response.send_message( "태스크가 성공적으로 중단되었습니다.", ephemeral = True, delete_after = 10 )
 
         async def cancel( i: discord.Interaction ):
             await i.response.defer()
@@ -198,7 +201,7 @@ class ConfirmButton( discord.ui.Button ):
     def __init__( self, confirm ):
         super().__init__(
             style = discord.ButtonStyle.primary,
-            label = "확인"
+            label = "확정"
         )
         self.confirm = confirm
 

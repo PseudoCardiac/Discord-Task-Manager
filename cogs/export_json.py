@@ -5,7 +5,7 @@ from utils import genChart, updateTimetable
 
 
 class ExportJsonCog( Cog ):
-    @discord.app_commands.command( name = "내보내기", description = "JSON 파일을 내보낸다" )
+    @discord.app_commands.command( name = "내보내기", description = "JSON 파일을 내보냅니다." )
     async def exportJson( self, i: discord.Interaction ):
         with open( "data/current_tasks.json", 'rb' ) as f:
             currentTasks = discord.File( f )
@@ -22,7 +22,7 @@ class ExportJsonCog( Cog ):
         await i.response.send_message( files = [ currentTasks, today, timetable, blacklist ] )
 
 
-    @discord.app_commands.command( name = "불러오기", description = "JSON 파일을 불러온다" )
+    @discord.app_commands.command( name = "불러오기", description = "시스템 파일을 불러옵니다." )
     async def importJson( self, i: discord.Interaction, file: discord.Attachment, name: Literal[ "current_tasks.json", "today.json", "game_blacklist.txt" ] ):
         b = await file.read()
 
@@ -39,13 +39,13 @@ class ExportJsonCog( Cog ):
                 f.write( b )
 
         else:
-            await i.response.send_message( "잘못된 선택", ephemeral = True, delete_after = 10 )
+            await i.response.send_message( "잘못된 옵션입니다.", ephemeral = True, delete_after = 10 )
             return
 
-        await i.response.send_message( "파일 불러옴", ephemeral = True, delete_after = 10 )
+        await i.response.send_message( "시스템 파일을 성공적으로 불러왔습니다.", ephemeral = True, delete_after = 10 )
 
 
-    @discord.app_commands.command( name = "초기화", description = "JSON 파일을 초기화한다" )
+    @discord.app_commands.command( name = "초기화", description = "블랙리스트를 제외한 시스템 파일을 초기화합니다." )
     async def resetJson( self, i: discord.Interaction ):
         with open( "data/current_tasks.json", 'w' ) as f:
             json.dump( [], f )
@@ -55,12 +55,12 @@ class ExportJsonCog( Cog ):
 
         genChart()
 
-        await i.response.send_message( "JSON 초기화됨", ephemeral = True, delete_after = 10 )
+        await i.response.send_message( "시스템 파일을 성공적으로 초기화했습니다.", ephemeral = True, delete_after = 10 )
 
 
-    @discord.app_commands.command( name = "새로고침", description = "대시보드를 새로고침한다" )
+    @discord.app_commands.command( name = "새로고침", description = "대시보드를 새로고침합니다." )
     async def refreshDashboard( self, i: discord.Interaction ):
         genChart()
         await updateTimetable( i.client )   # type: ignore
 
-        await i.response.send_message( "대시보드 새로고침", ephemeral = True, delete_after = 10 )
+        await i.response.send_message( "대시보드를 성공적으로 새로고침했습니다.", ephemeral = True, delete_after = 10 )

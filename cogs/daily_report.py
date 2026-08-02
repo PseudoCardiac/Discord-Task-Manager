@@ -9,6 +9,9 @@ if TYPE_CHECKING:
     from bot import Faust
 
 
+weekdays = [ '월', '화', '수', '목', '금', '토', '일' ]
+
+
 MIDNIGHT = datetime.time(
     hour = 0, minute = 0, second = 0,
     tzinfo = ZoneInfo( "Asia/Seoul" )
@@ -37,5 +40,12 @@ class DailyReportCog( Cog ):
         with open( "data/today.json", 'w' ) as f:
             json.dump( {}, f )
 
-        await self.reportChannel.send( content = f"{ yesterday.strftime( "%Y년 %m월 %d일자 통계" ) }", file = chart )
+        embed = discord.Embed(
+            title = f"{ yesterday.year }년 { yesterday.month }월 { yesterday.day }일 { weekdays[ yesterday.weekday() ] }요일",
+            color = 16757172
+        )
+
+        embed.set_image( url = "attachment://tt.png" )
+
+        await self.reportChannel.send( file = chart, embed = embed)
         await updateTimetable( self.faust )

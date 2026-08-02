@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 class NotifyLaterModal( discord.ui.Modal ):
     def __init__( self, task: "Task", action ):
         super().__init__(
-            title = "다시 알림",
+            title = "알림 설정",
             timeout = None
         )
         self.task = task
@@ -17,7 +17,7 @@ class NotifyLaterModal( discord.ui.Modal ):
     minutes = discord.ui.TextInput( label = "다시 알릴 시간 (분)", style = discord.TextStyle.short )
 
     async def on_submit( self, interaction: discord.Interaction ):
-        await interaction.response.send_message( f"{ minutesToHours( int( self.minutes.value ) ) } 후 다시 알림", ephemeral = True, delete_after = 10 )
+        await interaction.response.send_message( f"{ minutesToHours( int( self.minutes.value ) ) } 후 다시 알리겠습니다.", ephemeral = True, delete_after = 10 )
         await self.action( int( self.minutes.value ), self.task, interaction.client )
 
 

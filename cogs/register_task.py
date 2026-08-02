@@ -21,7 +21,7 @@ class RegisterTaskCog( Cog ):
         try:
             categoryObj = Category( self.bot.info.tag.index( category ) )
         except ValueError:
-            await i.response.send_message( "잘못된 카테고리입니다.", ephemeral = True, delete_after = 10 )
+            await i.response.send_message( "…파우스트는 카테고리가 아닙니다.", ephemeral = True, delete_after = 10 )
         else:
             task = Task(
                 name = name,
@@ -31,7 +31,7 @@ class RegisterTaskCog( Cog ):
 
             result = task.push()
             if result is False:
-                await i.response.send_message( "태스크가 등록되지 않았습니다.", ephemeral = True, delete_after = 10 )
+                await i.response.send_message( "태스크가 등록되지 않았습니다. 무언가 잘못되었군요.", ephemeral = True, delete_after = 10 )
                 return
 
             embed = TaskEmbed( task, self.bot.info )
@@ -41,7 +41,7 @@ class RegisterTaskCog( Cog ):
                 await setTimer( min, task, i.client )   # type: ignore
 
 
-    @discord.app_commands.command( name = "태스크_완료", description = "진행 중인 태스크를 전부 완료합니다." )
+    @discord.app_commands.command( name = "태스크_완료", description = "진행 중인 태스크를 전부 완료 처리합니다." )
     async def finishTask( self, i: discord.Interaction ):
         with open( "data/current_tasks.json", 'r', encoding = "UTF-8" ) as f:
             currentTasks: list[ dict[ str, str ] ] = json.load( f )
@@ -54,12 +54,12 @@ class RegisterTaskCog( Cog ):
             json.dump( [], f )
 
         await updateTimetable( i.client ) # type: ignore
-        await i.response.send_message( "태스크 완료됨", ephemeral = True, delete_after = 10 )
+        await i.response.send_message( "진행 중인 태스크가 전부 완료 처리되었습니다.", ephemeral = True, delete_after = 10 )
 
 
-    @discord.app_commands.command( name = "태스크_중단", description = "진행 중인 태스크를 전부 중단합니다." )
+    @discord.app_commands.command( name = "태스크_중단", description = "진행 중인 태스크를 전부 중단 처리합니다." )
     async def abortTask( self, i: discord.Interaction ):
         with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
             json.dump( [], f )
 
-        await i.response.send_message( "태스크 중단됨", ephemeral = True, delete_after = 10 )
+        await i.response.send_message( "진행 중인 태스크가 전부 중단 처리되었습니다.", ephemeral = True, delete_after = 10 )

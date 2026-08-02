@@ -3,6 +3,7 @@ from discord.ext.commands import Bot
 from dotenv import load_dotenv
 from objects import Info
 from cogs import RegisterTaskCog, DailyReportCog, ExportJsonCog, PresenceListener
+from utils import TimetableView
 
 
 class Faust( Bot ):
@@ -17,6 +18,7 @@ class Faust( Bot ):
         await self.add_cog( DailyReportCog( self ) )
         await self.add_cog( ExportJsonCog( self ) )
         await self.add_cog( PresenceListener( self ) )
+        self.add_view( TimetableView() )
         # await self.tree.sync()
         print( "파우스트 온라인." )
 

@@ -8,10 +8,8 @@ from matplotlib.ticker import AutoMinorLocator
 def genChart( dt: datetime.datetime | None = None ):
     # 날짜 설정
     if dt is None:
-        date = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).strftime( "%Y%m%d" )
-    else:
-        date = dt.strftime( "%Y%m%d" )
-
+        dt = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) )
+    date = dt.strftime( "%Y%m%d" )
 
     # 한글 폰트 설정
     plt.rcParams[ "font.family" ] = "NanumBarunGothic"
@@ -65,8 +63,8 @@ def genChart( dt: datetime.datetime | None = None ):
     ax.xaxis_date()
 
     # x축 범위 정의
-    ax.set_xlim( left = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).replace( hour = 0, minute = 0, second = 0, microsecond = 0 ), # type: ignore
-                right = ( datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) + datetime.timedelta( days = 1 ) ).replace( hour = 0, minute = 1, second = 0, microsecond = 0 ) ) # type: ignore
+    ax.set_xlim( left = dt.replace( hour = 0, minute = 0, second = 0, microsecond = 0 ), # type: ignore
+                right = ( dt + datetime.timedelta( days = 1 ) ).replace( hour = 0, minute = 1, second = 0, microsecond = 0 ) ) # type: ignore
 
     # 막대 그리기
     ax.barh( y = taskIndices, width = durations, left = startTimes, height = 0.8, color = colors ) # type: ignore

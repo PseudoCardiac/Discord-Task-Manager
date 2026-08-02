@@ -27,14 +27,15 @@ class DailyReportCog( Cog ):
     async def dailyReport( self ):
         cutCurrentTasks()
 
-        genChart( datetime.datetime.now() - datetime.timedelta( days = 1 ) )
+        yesterday = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) - datetime.timedelta( days = 1 )
+        genChart( yesterday )
 
         with open( "tt.png", 'rb' ) as f:
             chart = discord.File( f )
 
-        # 오늘자 작업 초기화
+        # 어제자 작업 초기화
         with open( "data/today.json", 'w' ) as f:
             json.dump( {}, f )
 
-        await self.reportChannel.send( file = chart )
+        await self.reportChannel.send( content = f"{ yesterday.strftime( "%Y년 %m월 %d일자 통계" ) }", file = chart )
         await updateTimetable( self.faust )

@@ -5,16 +5,17 @@ from .category import Category
 
 
 class Task:
-    def __init__( self, name: str, category: Category, desc = "", start = None, end: datetime | None = None ):
+    def __init__( self, name: str, category: Category, desc = "", start = None, end: datetime | None = None, id: str | None = None ):
         self.name = name
         self.category = category
         self.desc = desc
         self.start = datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) if start is None else start
         with open( "data/today.json", 'r', encoding = "UTF-8" ) as f:
-            today = json.load( f )
+            today: dict[ str, list[ dict[ str, str ] ] ] = json.load( f )
         todaysRecord = today.get( self.start.strftime( "%Y%m%d" ) ) or []
         self.number = len( todaysRecord ) + 1
         self.end = end
+        self.ID = self.start.strftime( "%Y%m%d" ) + str( ord( name[0] ) ) if id is None else id
 
 
     def toJsonObj( self ):
@@ -29,6 +30,7 @@ class Task:
         obj[ "number" ] = str( self.number )
         obj[ "start" ] = self.start.strftime( "%Y/%m/%d %H:%M:%S %z" )
         obj[ "end" ] = self.end.strftime( "%Y/%m/%d %H:%M:%S %z" ) if self.end is not None else "None"
+        obj[ "id" ] = self.ID
 
         return obj
 
@@ -43,7 +45,8 @@ class Task:
             category = Category( int( d[ "category" ] ) ),
             desc = d[ "desc" ],
             start = datetime.strptime( d[ "start" ], "%Y/%m/%d %H:%M:%S %z" ),
-            end = datetime.strptime( d[ "end" ], "%Y/%m/%d %H:%M:%S %z" ) if d[ "end" ] != "None" else None
+            end = datetime.strptime( d[ "end" ], "%Y/%m/%d %H:%M:%S %z" ) if d[ "end" ] != "None" else None,
+            id = d[ "id" ]
         )
 
 
@@ -75,13 +78,9 @@ class Task:
         idx = 0
 
         for i in range( len( currentTasks ) ):
-            if currentTasks[i][ "name" ] == jsonObj[ "name" ] \
-            and currentTasks[i][ "category" ] == jsonObj[ "category" ] \
-            and currentTasks[i][ "desc" ] == jsonObj[ "desc" ] \
-            and currentTasks[i][ "start" ] == jsonObj[ "start" ] \
-            and currentTasks[i][ "end" ] == jsonObj[ "end" ]:
+            if currentTasks[i][ "id" ] == jsonObj[ "id" ]:
                 break
-            i += 1
+            idx += 1
         else:
             return False
 
@@ -110,16 +109,9 @@ class Task:
         if not currentTasks:
             return False
 
-        idx = 0
-
         for i in range( len( currentTasks ) ):
-            if currentTasks[i][ "name" ] == jsonObj[ "name" ] \
-            and currentTasks[i][ "category" ] == jsonObj[ "category" ] \
-            and currentTasks[i][ "desc" ] == jsonObj[ "desc" ] \
-            and currentTasks[i][ "start" ] == jsonObj[ "start" ] \
-            and currentTasks[i][ "end" ] == jsonObj[ "end" ]:
+            if currentTasks[i][ "id" ] == jsonObj[ "id" ]:
                 return True
-            i += 1
 
         return False
 
@@ -129,7 +121,7 @@ class Task:
         self의 종료 시간을 현재 시간으로 설정하고 오늘의 기록에 추가한다
         """
         with open( "data/today.json", 'r', encoding = "UTF-8" ) as f:
-            today = json.load( f )
+            today: dict[ str, list[ dict[ str, str ] ] ] = json.load( f )
 
         self.end = datetime.now( tz = ZoneInfo( "Asia/Seoul" ) )
         if today.get( self.start.strftime( "%Y%m%d" ) ):    # 오늘 기록이 있음

@@ -21,7 +21,9 @@ def genChart( dt: datetime.datetime | None = None ):
     with open( "data/today.json", "r", encoding = "UTF-8" ) as f:
         today: dict[ str, list[ dict[ str, str ] ] ] = json.load( f )
 
-    tasksDict = today.get( date )
+    tasksList = today.get( date )
+    if tasksList is not None:
+        tasksList.sort( key = lambda x: x[ "id" ] )
     taskIndices: list[ str ] = []
     taskNames: list[ str ] = []
     taskDescs: list[ str ] = []
@@ -42,7 +44,7 @@ def genChart( dt: datetime.datetime | None = None ):
         "8": "#898989A0"
     }
 
-    for task in tasksDict if tasksDict is not None else []:
+    for task in tasksList if tasksList is not None else []:
         taskIndices.append( task[ "id" ] )
         taskNames.append( task[ "name" ] )
         taskDescs.append( task[ "desc" ] )
@@ -97,6 +99,7 @@ def genChart( dt: datetime.datetime | None = None ):
 
     # 플롯 그리기
     plt.savefig( "tt.png" )
+    # plt.show()
 
 
 if __name__ == "__main__":

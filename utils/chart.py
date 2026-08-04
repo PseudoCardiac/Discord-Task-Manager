@@ -58,7 +58,7 @@ def genChart( dt: datetime.datetime | None = None ):
     # =======================================================
 
     # 플롯 정의
-    fig, ax = plt.subplots( figsize = ( 16, max( len( taskIndices ) / 1.5, 3) ), facecolor="#3E3E42")
+    _, ax = plt.subplots( figsize = ( 16, max( len( taskIndices ) / 1.5, 3) ), facecolor="#3E3E42")
     ax.set_facecolor("#3E3E42")
 
     # x축을 날짜로 정의

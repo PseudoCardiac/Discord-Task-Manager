@@ -62,7 +62,7 @@ class FinishButton( discord.ui.Button ):
 
             result.record()
             await updateTimetable( interaction.client ) # type: ignore
-            await i.response.send_message( "태스크가 완료되었습니다. 바람직한 현상이군요.", ephemeral = True, delete_after = 10 )
+            await i.response.send_message( "태스크가 완료되었습니다.", ephemeral = True, delete_after = 10 )
 
         async def cancel( i: discord.Interaction ):
             await i.response.defer()

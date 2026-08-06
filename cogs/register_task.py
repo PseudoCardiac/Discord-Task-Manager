@@ -1,11 +1,12 @@
-import discord, json
+import discord, json, datetime, re
+from zoneinfo import ZoneInfo
 from discord.ext.commands import Cog
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bot import Faust
-from objects import Task, Category, TaskEmbed, TaskEmbedView, NotificationView
-from utils import updateTimetable
+from objects import Task, Category, TaskEmbed, TaskEmbedView
 from .timer import setTimer
+from utils import minutesToHours, updateTimetable
 
 
 class RegisterTaskCog( Cog ):
@@ -16,29 +17,30 @@ class RegisterTaskCog( Cog ):
     @discord.app_commands.rename( name = "제목" )
     @discord.app_commands.rename( desc = "세부사항" )
     @discord.app_commands.rename( category = "카테고리" )
-    @discord.app_commands.rename( min = "예상_소요_시간_분" )
+    @discord.app_commands.rename( min = "다시_알림_시간_분" )
     async def registerTask( self, i: discord.Interaction, name: str, category: discord.Role, desc: str = "", min: int = 0 ):
         try:
             categoryObj = Category( self.bot.info.tag.index( category ) )
         except ValueError:
             await i.response.send_message( "…파우스트는 카테고리가 아닙니다.", ephemeral = True, delete_after = 10 )
-        else:
-            task = Task(
-                name = name,
-                category = categoryObj,
-                desc = desc
-            )
+            return
+        
+        task = Task(
+            name = name,
+            category = categoryObj,
+            desc = desc
+        )
 
-            result = task.push()
-            if result is False:
-                await i.response.send_message( "태스크가 등록되지 않았습니다. 무언가 잘못되었군요.", ephemeral = True, delete_after = 10 )
-                return
+        result = task.push()
+        if result is False:
+            await i.response.send_message( "태스크가 등록되지 않았습니다. 무언가 잘못되었군요.", ephemeral = True, delete_after = 10 )
+            return
 
-            embed = TaskEmbed( task, self.bot.info )
-            await self.bot.info.channel_log.send( embed = embed, view = TaskEmbedView( embed ) )
-            await i.response.send_message( "태스크가 등록되었습니다.", ephemeral = True, delete_after = 10 )
-            if min:
-                await setTimer( min, task, i.client )   # type: ignore
+        embed = TaskEmbed( task, self.bot.info )
+        await self.bot.info.channel_log.send( embed = embed, view = TaskEmbedView( embed ) )
+        await i.response.send_message( "태스크가 등록되었습니다.", ephemeral = True, delete_after = 10 )
+        if min:
+            await setTimer( min, task, i.client )   # type: ignore
 
 
     @discord.app_commands.command( name = "태스크_완료", description = "진행 중인 태스크를 전부 완료 처리합니다." )
@@ -63,3 +65,50 @@ class RegisterTaskCog( Cog ):
             json.dump( [], f )
 
         await i.response.send_message( "진행 중인 태스크가 전부 중단 처리되었습니다.", ephemeral = True, delete_after = 10 )
+
+
+    @discord.app_commands.rename( name = "제목" )
+    @discord.app_commands.rename( desc = "세부사항" )
+    @discord.app_commands.rename( category = "카테고리" )
+    @discord.app_commands.rename( start = "시작_시간_6자리" )
+    @discord.app_commands.rename( end = "종료_시간_6자리" )
+    @discord.app_commands.command( name = "태스크_기록", description = "완료된 태스크를 등록합니다." )
+    async def recordTask( self, i: discord.Interaction, name: str, category: discord.Role, start: str, end: str, desc: str = "" ):
+        try:
+            categoryObj = Category( self.bot.info.tag.index( category ) )
+        except ValueError:
+            await i.response.send_message( "…파우스트는 카테고리가 아닙니다.", ephemeral = True, delete_after = 10 )
+            return
+
+        try:
+            tz = ZoneInfo( "Asia/Seoul" )
+            today = datetime.datetime.now( tz = tz ).date()
+            startTime = datetime.datetime.strptime( start, "%H%M%S" ).time()
+            startDateTime = datetime.datetime.combine( today, startTime, tz )
+            endTime = datetime.datetime.strptime( end, "%H%M%S" ).time()
+            endDateTime = datetime.datetime.combine( today, endTime, tz )
+        except ValueError:
+            await i.response.send_message( "시간 형식이 잘못되었습니다.", ephemeral = True, delete_after = 10 )
+            return
+
+        task = Task(
+            name = name,
+            category = categoryObj,
+            desc = desc,
+            start = startDateTime,
+            end = endDateTime
+        )
+
+        task.record( False )
+        minutes = round( ( endDateTime - startDateTime ).total_seconds() ) // 60
+        durationString = minutesToHours( minutes )
+
+
+        embed = TaskEmbed( task, self.bot.info )
+        embed.description = re.sub( r"<t:\d+:R> 시작", f"{ durationString }동안 진행", str( embed.description ) )
+        view = TaskEmbedView( embed )
+        for item in view.children:
+            item.disabled = True    # type: ignore
+
+        await self.bot.info.channel_log.send( embed = embed, view = view )
+        await i.response.send_message( "태스크가 기록되었습니다.", ephemeral = True, delete_after = 10 )

@@ -116,14 +116,16 @@ class Task:
         return False
 
 
-    def record( self ):
+    def record( self, setEndTimeToNow = True ):
         """
         self의 종료 시간을 현재 시간으로 설정하고 오늘의 기록에 추가한다
         """
         with open( "data/today.json", 'r', encoding = "UTF-8" ) as f:
             today: dict[ str, list[ dict[ str, str ] ] ] = json.load( f )
 
-        self.end = datetime.now( tz = ZoneInfo( "Asia/Seoul" ) )
+        if setEndTimeToNow:
+            self.end = datetime.now( tz = ZoneInfo( "Asia/Seoul" ) )
+            
         if today.get( self.start.strftime( "%Y%m%d" ) ):    # 오늘 기록이 있음
             today[ self.start.strftime( "%Y%m%d" ) ].append( self.toJsonObj() )
         else:   # 오늘 기록이 없음

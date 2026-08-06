@@ -19,7 +19,7 @@ class Faust( Bot ):
         await self.add_cog( ExportJsonCog( self ) )
         await self.add_cog( PresenceListener( self ) )
         self.add_view( TimetableView() )
-        # await self.tree.sync()
+        await self.tree.sync()
         print( "파우스트 온라인." )
 
 

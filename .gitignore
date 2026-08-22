@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+tt.png
+data/current_tasks.json
+data/today.json

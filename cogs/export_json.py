@@ -25,18 +25,19 @@ class ExportJsonCog( Cog ):
     @discord.app_commands.command( name = "불러오기", description = "시스템 파일을 불러옵니다." )
     async def importJson( self, i: discord.Interaction, file: discord.Attachment, name: Literal[ "current_tasks.json", "today.json", "game_blacklist.txt" ] ):
         b = await file.read()
+        text = b.decode( "UTF-8" )
 
         if name == "current_tasks.json":
-            with open( "data/current_tasks.json", 'wb' ) as f:
-                f.write( b )
+            with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
+                f.write( text )
 
         elif name == "today.json":
-            with open( "data/today.json", 'wb' ) as f:
-                f.write( b )
+            with open( "data/today.json", 'w', encoding = "UTF-8" ) as f:
+                f.write( text )
 
         elif name == "game_blacklist.txt":
-            with open( "data/game_blacklist.txt", 'wb' ) as f:
-                f.write( b )
+            with open( "data/game_blacklist.txt", 'w', encoding = "UTF-8" ) as f:
+                f.write( text )
 
         else:
             await i.response.send_message( "잘못된 옵션입니다.", ephemeral = True, delete_after = 10 )

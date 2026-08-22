@@ -73,7 +73,7 @@ class RegisterTaskCog( Cog ):
     @discord.app_commands.rename( start = "시작_시간_6자리" )
     @discord.app_commands.rename( end = "종료_시간_6자리" )
     @discord.app_commands.command( name = "태스크_기록", description = "완료된 태스크를 등록합니다." )
-    async def recordTask( self, i: discord.Interaction, name: str, category: discord.Role, start: str, end: str, desc: str = "" ):
+    async def recordTask( self, i: discord.Interaction, name: str, category: discord.Role, start: str, end: str | None = None, desc: str = "" ):
         try:
             categoryObj = Category( self.bot.info.tag.index( category ) )
         except ValueError:
@@ -85,7 +85,10 @@ class RegisterTaskCog( Cog ):
             today = datetime.datetime.now( tz = tz ).date()
             startTime = datetime.datetime.strptime( start, "%H%M%S" ).time()
             startDateTime = datetime.datetime.combine( today, startTime, tz )
-            endTime = datetime.datetime.strptime( end, "%H%M%S" ).time()
+            if end is None:
+                endTime = datetime.datetime.now( tz = tz ).time()
+            else:
+                endTime = datetime.datetime.strptime( end, "%H%M%S" ).time()
             endDateTime = datetime.datetime.combine( today, endTime, tz )
         except ValueError:
             await i.response.send_message( "시간 형식이 잘못되었습니다.", ephemeral = True, delete_after = 10 )
@@ -109,6 +112,8 @@ class RegisterTaskCog( Cog ):
         view = TaskEmbedView( embed )
         for item in view.children:
             item.disabled = True    # type: ignore
+
+        await updateTimetable( i.client )   # type: ignore
 
         await self.bot.info.channel_log.send( embed = embed, view = view )
         await i.response.send_message( "태스크가 기록되었습니다.", ephemeral = True, delete_after = 10 )

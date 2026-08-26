@@ -27,20 +27,50 @@ def generateTimeline():
     return chart, embed
 
 
+async def getLatestTimelineMessage( faust: "Faust" ):
+    with open( "data/latest_timeline_msg_id.txt", 'r' ) as f:
+        msgID = f.readline()
+
+    try:
+        return await faust.info.channel_timeline.fetch_message( int( msgID ) )
+    except discord.NotFound:
+        return False
+    except ValueError:
+        return False
+
+
 async def updateTimeline( faust: "Faust" ):
     """
     최신 타임라인 메시지를 업데이트한다.
     """
+    latestTimelineMsg = await getLatestTimelineMessage( faust )
+    if latestTimelineMsg is False:
+        await createTimeline( faust )
+        return
+    latestTimeline = latestTimelineMsg.embeds[ 0 ]
+
+    # ===== 기존 임베드와 날짜 비교 =====
+    if not latestTimeline.title:
+        raise Exception( "임베드에 제목이 없음" )
+    latestTimelineDate = stringToDate( latestTimeline.title )
+    if not latestTimelineDate:
+        raise Exception( "임베드 제목이 올바르지 않은 형식임" )
+    # ===================================
+
+    if latestTimelineDate == datetime.datetime.now().date():
+        # 타임라인 수정
+        await editTimeline( latestTimelineMsg )
+    else:
+        # 타임라인 생성
+        await deleteTimelineView( latestTimelineMsg )
+        await createTimeline( faust )
+
+
+async def editTimeline( latestTimelineMsg: discord.Message ):
+    """
+    타임라인 채널의 최신 메시지를 수정한다.
+    """
     chart, embed = generateTimeline()
-
-    latestTimelineMsg = [ msg async for msg in faust.info.channel_timeline.history( limit = 1 ) ][ 0 ]
-    # latestTimeline = latestTimelineMsg.embeds[ 0 ]
-
-    # if not latestTimeline.title:
-    #     raise Exception( "임베드에 제목이 없음" )
-    # latestTimelineDate = stringToDate( latestTimeline.title )
-    # if not latestTimelineDate:
-    #     raise Exception( "임베드 제목이 올바르지 않은 형식임" )
 
     await latestTimelineMsg.edit( attachments = [ chart ], embed = embed, view = TimelineView() )
 
@@ -51,7 +81,10 @@ async def createTimeline( faust: "Faust" ):
     """
     chart, embed = generateTimeline()
 
-    await faust.info.channel_timeline.send( file = chart, embed = embed, view = TimelineView() )
+    msg = await faust.info.channel_timeline.send( file = chart, embed = embed, view = TimelineView() )
+
+    with open( "data/latest_timeline_msg_id.txt", 'w' ) as f:
+        f.write( str( msg.id ) )
 
 
 async def deleteTimelineView( msg: discord.Message ):

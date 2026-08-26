@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from bot import Faust
 from objects import Task, Category, TaskEmbed, TaskEmbedView
 from .timer import setTimer
-from utils import minutesToHours, updateTimetable
+from utils import minutesToHours, updateTimeline
 
 
 class RegisterTaskCog( Cog ):
@@ -55,7 +55,7 @@ class RegisterTaskCog( Cog ):
         with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
             json.dump( [], f )
 
-        await updateTimetable( i.client ) # type: ignore
+        await updateTimeline( i.client ) # type: ignore
         await i.response.send_message( "진행 중인 태스크가 전부 완료 처리되었습니다.", ephemeral = True, delete_after = 10 )
 
 
@@ -113,7 +113,7 @@ class RegisterTaskCog( Cog ):
         for item in view.children:
             item.disabled = True    # type: ignore
 
-        await updateTimetable( i.client )   # type: ignore
+        await updateTimeline( i.client )   # type: ignore
 
         await self.bot.info.channel_log.send( embed = embed, view = view )
         await i.response.send_message( "태스크가 기록되었습니다.", ephemeral = True, delete_after = 10 )

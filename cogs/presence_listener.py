@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bot import Faust
 from objects import Category, Task
-from utils import updateTimetable
+from utils import updateTimeline
 
 
 class PresenceListener( Cog ):
@@ -52,7 +52,7 @@ class PresenceListener( Cog ):
                 task.pop()
                 task.record()
 
-            await updateTimetable( self.faust )
+            await updateTimeline( self.faust )
 
         if startedPlaying:
             for game in startedPlaying:

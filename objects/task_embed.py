@@ -6,7 +6,7 @@ from .category import Category
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .task import Task
-from utils import minutesToHours, updateTimetable
+from utils import minutesToHours, updateTimeline
 
 
 weekdays = [ '월', '화', '수', '목', '금', '토', '일' ]
@@ -61,7 +61,7 @@ class FinishButton( discord.ui.Button ):
             # ============================
 
             result.record()
-            await updateTimetable( interaction.client ) # type: ignore
+            await updateTimeline( interaction.client ) # type: ignore
             await i.response.send_message( "태스크가 완료되었습니다.", ephemeral = True, delete_after = 10 )
 
         async def cancel( i: discord.Interaction ):

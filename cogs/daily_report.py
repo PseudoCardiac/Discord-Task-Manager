@@ -2,7 +2,7 @@ import discord, datetime, json
 from zoneinfo import ZoneInfo
 from discord.ext import tasks
 from discord.ext.commands import Cog
-from utils import genChart, updateTimetable
+from utils import genChart, updateTimeline
 from utils.cut_current_tasks import cutCurrentTasks
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ MIDNIGHT = datetime.time(
 class DailyReportCog( Cog ):
     def __init__( self, faust: "Faust" ):
         self.faust = faust
-        self.reportChannel = faust.info.channel_log
+        self.reportChannel = faust.info.channel_timeline
 
         self.dailyReport.start()
 
@@ -41,11 +41,11 @@ class DailyReportCog( Cog ):
             json.dump( {}, f )
 
         embed = discord.Embed(
-            title = f"{ yesterday.year }년 { yesterday.month }월 { yesterday.day }일 { weekdays[ yesterday.weekday() ] }요일",
+            title = f"{ yesterday.year }년 { yesterday.month }월 { yesterday.day }일 { weekdays[ yesterday.weekday() ] }요일 타임라인",
             color = 16757172
         )
 
         embed.set_image( url = "attachment://tt.png" )
 
         await self.reportChannel.send( file = chart, embed = embed)
-        await updateTimetable( self.faust )
+        await updateTimeline( self.faust )

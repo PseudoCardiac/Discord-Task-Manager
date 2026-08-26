@@ -22,6 +22,6 @@ class Info:
 
         self.channel_home: discord.TextChannel = self.guild.get_channel( 1530546132382388234 )  # type: ignore
         self.channel_log: discord.TextChannel = self.guild.get_channel( 1530566962785026060 )   # type: ignore
-        self.channel_dashboard: discord.TextChannel = self.guild.get_channel( 1531452397128388708 )   # type: ignore
+        self.channel_timeline: discord.TextChannel = self.guild.get_channel( 1531452397128388708 )   # type: ignore
 
-        self.msg_timetable: discord.Message = await self.channel_dashboard.fetch_message( 1531453119240737025 )
+        self.msg_timetable: discord.Message = await self.channel_timeline.fetch_message( 1531453119240737025 )

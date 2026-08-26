@@ -220,3 +220,4 @@ __marimo__/
 tt.png
 data/current_tasks.json
 data/today.json
+data/latest_timeline_msg_id.txt

@@ -3,7 +3,7 @@ from discord.ext.commands import Bot
 from dotenv import load_dotenv
 from objects import Info
 from cogs import RegisterTaskCog, DailyReportCog, ExportJsonCog, PresenceListener
-from utils import TimelineView, getLatestTimelineMessage
+from utils import TimelineView
 
 
 class Faust( Bot ):

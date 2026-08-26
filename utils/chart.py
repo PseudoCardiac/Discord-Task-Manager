@@ -5,10 +5,16 @@ from matplotlib.dates import DateFormatter
 from matplotlib.ticker import AutoMinorLocator
 
 
-def genChart( dt: datetime.datetime | None = None ):
+def genChart( dt: datetime.date | None = None ):
+    """
+    today.json에 기반해 차트 이미지(tt.png)를 생성한다.
+    """
+    
     # 날짜 설정
     if dt is None:
         dt = datetime.datetime.now( tz = ZoneInfo( "Asia/Seoul" ) )
+    else:
+        dt = datetime.datetime.combine( dt, datetime.time( 0, 0, 0, 0 ), tzinfo = ZoneInfo( "Asia/Seoul" ) )
     date = dt.strftime( "%Y%m%d" )
 
     # 한글 폰트 설정

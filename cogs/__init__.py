@@ -1,5 +1,5 @@
 from .daily_report import DailyReportCog
-from .register_task import RegisterTaskCog
+from .task_management import TaskManagementCog
 from .export_json import ExportJsonCog
 from .presence_listener import PresenceListener
 from .timer import setTimer

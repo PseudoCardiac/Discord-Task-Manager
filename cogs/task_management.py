@@ -9,7 +9,7 @@ from .timer import setTimer
 from utils import minutesToHours, updateTimeline
 
 
-class RegisterTaskCog( Cog ):
+class TaskManagementCog( Cog ):
     def __init__( self, bot: "Faust" ):
         self.bot = bot
 

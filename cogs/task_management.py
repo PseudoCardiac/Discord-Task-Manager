@@ -117,3 +117,50 @@ class TaskManagementCog( Cog ):
 
         await self.bot.info.channel_log.send( embed = embed, view = view )
         await i.response.send_message( "태스크가 기록되었습니다.", ephemeral = True, delete_after = 10 )
+
+
+    @discord.app_commands.command( name = "태스크_수정", description = "완료된 태스크를 수정합니다." )
+    async def editTask( self, i: discord.Interaction ):
+        await i.response.send_modal( TaskEditModal() )
+
+
+class CategoryRadioGroup( discord.ui.RadioGroup ):
+    def __init__( self ):
+        super().__init__(
+            options = [
+                discord.RadioGroupOption( label = "대학", value = '0' ),
+                discord.RadioGroupOption( label = "생활", value = '1' ),
+                discord.RadioGroupOption( label = "운동", value = '2' ),
+                discord.RadioGroupOption( label = "휴식", value = '3' ),
+                discord.RadioGroupOption( label = "공부", value = '4' ),
+                discord.RadioGroupOption( label = "작업", value = '5' ),
+                discord.RadioGroupOption( label = "게임", value = '6' ),
+                discord.RadioGroupOption( label = "수면", value = '7' ),
+                discord.RadioGroupOption( label = "기타", value = '8' ),
+            ],
+            required = False
+        )
+
+
+class TaskEditModal( discord.ui.Modal ):
+    def __init__( self ):
+        super().__init__(
+            title = "태스크 수정",
+            timeout = None
+        )
+    name = discord.ui.TextInput( label = "제목", style = discord.TextStyle.short, required = False )
+    desc = discord.ui.TextInput( label = "세부 사항", style = discord.TextStyle.short, required = False )
+    category = discord.ui.Label(
+        text = "카테고리",
+        component = CategoryRadioGroup()
+        # component = discord.ui.RoleSelect()
+    )
+
+
+    async def on_submit( self, i: discord.Interaction ):
+        if not self.name.value and not self.desc.value and not self.category.component.value:   # type: ignore
+            await i.response.send_message( "태스크가 수정되지 않았습니다. 무언가 잘못되었군요.", ephemeral = True, delete_after = 10 )
+        else:
+            # self.button.parentEmbed.task.edit( name = self.name.value, desc = self.desc.value )
+            # await i.message.edit( embed = TaskEmbed( self.button.parentEmbed.task, i.client.info ) )    # type: ignore
+            await i.response.send_message( "태스크가 성공적으로 수정되었습니다.", ephemeral = True, delete_after = 10 )

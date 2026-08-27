@@ -2,7 +2,7 @@ import discord, os, asyncio
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
 from objects import Info
-from cogs import TaskManagementCog, DailyReportCog, ExportJsonCog, PresenceListener
+from cogs import TaskManagementCog, DailyReportCog, FileManagementCog, PresenceListener
 from utils import TimelineView
 
 
@@ -16,7 +16,7 @@ class Faust( Bot ):
         await self.info.init( self )
         await self.add_cog( TaskManagementCog( self ) )
         await self.add_cog( DailyReportCog( self ) )
-        await self.add_cog( ExportJsonCog( self ) )
+        await self.add_cog( FileManagementCog( self ) )
         await self.add_cog( PresenceListener( self ) )
         self.add_view( TimelineView() )
         # await self.tree.sync()

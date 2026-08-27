@@ -4,7 +4,7 @@ from typing import Literal
 from utils import genChart, updateTimeline
 
 
-class ExportJsonCog( Cog ):
+class FileManagementCog( Cog ):
     @discord.app_commands.command( name = "내보내기", description = "JSON 파일을 내보냅니다." )
     async def exportJson( self, i: discord.Interaction ):
         with open( "data/current_tasks.json", 'rb' ) as f:

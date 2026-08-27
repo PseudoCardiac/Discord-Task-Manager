@@ -69,10 +69,12 @@ async def updateTimeline( faust: "Faust", yesterday = False ):
         raise Exception( "임베드 제목이 올바르지 않은 형식임" )
 
     # ===== 기존 임베드와 날짜 비교 =====
+    tz = ZoneInfo( "Asia/Seoul" )
+    
     if yesterday:
-        targetDate = ( datetime.datetime.now() - datetime.timedelta( days = 1 ) ).date()
+        targetDate = ( datetime.datetime.now( tz = tz ) - datetime.timedelta( days = 1 ) ).date()
     else:
-        targetDate = datetime.datetime.now().date()
+        targetDate = datetime.datetime.now( tz = tz ).date()
 
     if latestTimelineDate == targetDate:
         # 타임라인 수정

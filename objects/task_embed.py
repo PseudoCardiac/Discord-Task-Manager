@@ -23,7 +23,7 @@ class TaskEmbed( discord.Embed ):
         self.set_footer( text = f"{ task.start.year }년 { task.start.month }월 { task.start.day }일 { weekdays[ task.start.weekday() ] }요일 #{ task.number }" )
 
         if self.task.end is not None:
-            self.description = f"{ minutesToHours( round( ( self.task.end - self.task.start ).total_seconds() ) // 60 ) }동안 진행"
+            self.description = f"{ task.desc }\n<@&{ info.tag[ task.category ].id }> · { minutesToHours( round( ( self.task.end - self.task.start ).total_seconds() ) // 60 ) }동안 진행"
 
 
 class TaskEmbedView( discord.ui.View ):

@@ -154,14 +154,14 @@ class Task:
         self.push()
 
 
-    def editFull( self, name = "", category = None, desc = "", start = "", end = "" ):
+    def editFull( self, name, category, desc, start, end ):
         """
         self의 name, category, desc, start, end를 수정한다. 완료된 태스크 전용!
         """
         if name != "":
             self.name = name
         if category is not None:
-            self.category = category
+            self.category = Category( int( category ) )
         if desc != "":
             self.desc = desc
         if start != "":

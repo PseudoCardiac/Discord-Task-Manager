@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from bot import Faust
 from objects import Task, Category, TaskEmbed, TaskEmbedView
 from .timer import setTimer
-from utils import minutesToHours, updateTimeline, getTodaysTasks
+from utils import minutesToHours, updateTimeline, getTodaysTasks, editFinishedTask
 
 
 class TaskManagementCog( Cog ):
@@ -119,8 +119,10 @@ class TaskManagementCog( Cog ):
 
     @discord.app_commands.command( name = "태스크_수정", description = "완료된 태스크를 수정합니다." )
     async def editTask( self, i: discord.Interaction ):
-        # await i.response.send_modal( TaskEditModal() )
-        await i.response.send_message( view = TaskEditView() )
+        if not getTodaysTasks():
+            await i.response.send_message( "현재 수정 가능한 태스크가 없습니다.", ephemeral = True, delete_after = 10 )
+        else:
+            await i.response.send_message( view = TaskEditView(), ephemeral = True, delete_after = 10 )
 
 
 class TaskEditView( discord.ui.View ):
@@ -144,7 +146,7 @@ class TaskEditSelect( discord.ui.Select ):
 
     async def callback( self, interaction: discord.Interaction ):
         await interaction.response.send_modal( TaskEditModal( self.values[0] ) )
-
+        self.disabled = True
 
 
 class CategoryRadioGroup( discord.ui.RadioGroup ):
@@ -171,6 +173,8 @@ class TaskEditModal( discord.ui.Modal ):
             title = "태스크 수정",
             timeout = None
         )
+        self.taskID = taskID
+
     name = discord.ui.TextInput( label = "제목", style = discord.TextStyle.short, required = False )
     desc = discord.ui.TextInput( label = "세부 사항", style = discord.TextStyle.short, required = False )
     category = discord.ui.Label(
@@ -178,10 +182,21 @@ class TaskEditModal( discord.ui.Modal ):
         component = CategoryRadioGroup()
         # component = discord.ui.RoleSelect()
     )
+    start = discord.ui.TextInput( label = "시작 시간 (6자리)", style = discord.TextStyle.short, required = False )
+    end = discord.ui.TextInput( label = "종료 시간 (6자리)", style = discord.TextStyle.short, required = False )
 
     async def on_submit( self, i: discord.Interaction ):
         if not self.name.value and not self.desc.value and not self.category.component.value:   # type: ignore
             await i.response.send_message( "태스크가 수정되지 않았습니다. 무언가 잘못되었군요.", ephemeral = True, delete_after = 10 )
         else:
-            # TODO today.json 수정
+            task = editFinishedTask( self.taskID, self.name.value, self.desc.value, self.category.component.value, self.start.value, self.end.value ) # type: ignore
+
+            msgID = task.msgID  # type: ignore
+            if msgID is None:
+                assert Exception( "수정할 태스크 임베드의 메시지 ID 정보가 없음" )
+                return
+
+            msg = await i.client.info.channel_log.fetch_message( msgID )    # type: ignore
+            await msg.edit( embed = TaskEmbed( task, i.client.info ) )      # type: ignore
+
             await i.response.send_message( "태스크가 성공적으로 수정되었습니다.", ephemeral = True, delete_after = 10 )

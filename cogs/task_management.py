@@ -186,8 +186,8 @@ class TaskEditModal( discord.ui.Modal ):
     end = discord.ui.TextInput( label = "종료 시간 (6자리)", style = discord.TextStyle.short, required = False )
 
     async def on_submit( self, i: discord.Interaction ):
-        if not self.name.value and not self.desc.value and not self.category.component.value:   # type: ignore
-            await i.response.send_message( "태스크가 수정되지 않았습니다. 무언가 잘못되었군요.", ephemeral = True, delete_after = 10 )
+        if not self.name.value and not self.desc.value and not self.category.component.value and not self.start.value and not self.end.value:   # type: ignore
+            await i.response.send_message( "태스크가 수정되지 않았습니다.", ephemeral = True, delete_after = 10 )
         else:
             task = editFinishedTask( self.taskID, self.name.value, self.desc.value, self.category.component.value, self.start.value, self.end.value ) # type: ignore
 

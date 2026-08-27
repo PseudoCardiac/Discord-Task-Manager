@@ -12,6 +12,6 @@ def getTodaysTasks():
     todayTasks = today.get( todayStr )
     
     if todayTasks is None:
-        return None
+        return []
 
     return list( map( lambda x: Task.toTaskObj( x ), todayTasks ) )

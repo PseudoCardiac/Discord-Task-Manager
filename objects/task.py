@@ -5,7 +5,7 @@ from .category import Category
 
 
 class Task:
-    def __init__( self, name: str, category: Category, desc = "", start = None, end: datetime | None = None, id: str | None = None ):
+    def __init__( self, name: str, category: Category, desc = "", start = None, end: datetime | None = None, id: str | None = None, msgID: int | None = None ):
         self.name = name
         self.category = category
         self.desc = desc
@@ -15,7 +15,8 @@ class Task:
         todaysRecord = today.get( self.start.strftime( "%Y%m%d" ) ) or []
         self.number = len( todaysRecord ) + 1
         self.end = end
-        self.ID = self.start.strftime( "%Y%m%d%H%M%S" ) + str( ord( name[0] ) ) if id is None else id
+        self.ID = self.start.strftime( "%H%M%S" ) + str( ord( name[0] ) ) if id is None else id
+        self.msgID = msgID
 
 
     def toJsonObj( self ):
@@ -31,6 +32,7 @@ class Task:
         obj[ "start" ] = self.start.strftime( "%Y/%m/%d %H:%M:%S %z" )
         obj[ "end" ] = self.end.strftime( "%Y/%m/%d %H:%M:%S %z" ) if self.end is not None else "None"
         obj[ "id" ] = self.ID
+        obj[ "msgID" ] = str( self.msgID ) if self.msgID is not None else "None"
 
         return obj
 
@@ -46,7 +48,8 @@ class Task:
             desc = d[ "desc" ],
             start = datetime.strptime( d[ "start" ], "%Y/%m/%d %H:%M:%S %z" ),
             end = datetime.strptime( d[ "end" ], "%Y/%m/%d %H:%M:%S %z" ) if d[ "end" ] != "None" else None,
-            id = d[ "id" ]
+            id = d[ "id" ],
+            msgID= int( d[ "msgID" ] ) if d[ "msgID" ] != "None" else None
         )
 
 
@@ -149,3 +152,28 @@ class Task:
             self.desc = desc
 
         self.push()
+
+
+    def editFull( self, name = "", category = None, desc = "", start = "", end = "" ):
+        """
+        self의 name, category, desc, start, end를 수정한다. 완료된 태스크 전용!
+        """
+        if name != "":
+            self.name = name
+        if category is not None:
+            self.category = category
+        if desc != "":
+            self.desc = desc
+        if start != "":
+            hour = int( start[ :2 ] )
+            minute = int( start[ 2:4 ] )
+            second = int( start[ 4: ] )
+            start = datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).replace( hour = hour, minute = minute, second = second )
+
+            self.start = start
+            self.id = start.strftime( "%H%M%S" ) + str( ord( self.name[0] ) )
+        if end != "":
+            hour = int( end[ :2 ] )
+            minute = int( end[ 2:4 ] )
+            second = int( end[ 4: ] )
+            self.end = datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).replace( hour = hour, minute = minute, second = second )

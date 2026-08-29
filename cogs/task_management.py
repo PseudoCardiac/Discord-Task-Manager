@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from bot import Faust
 from objects import Task, Category, TaskEmbed, TaskEmbedView
 from .timer import setTimer
-from utils import minutesToHours, updateTimeline, getTodaysTasks, editFinishedTask, editTaskEmbedFinished, editTaskEmbedAborted
+from utils import minutesToHours, updateTimeline, getTodaysTasks, editFinishedTask, editTaskEmbedFinished, editTaskEmbedAborted, deleteTaskFromToday
 
 
 class TaskManagementCog( Cog ):
@@ -194,13 +194,14 @@ class CategoryRadioGroup( discord.ui.RadioGroup ):
                 discord.RadioGroupOption( label = "게임", value = '6' ),
                 discord.RadioGroupOption( label = "수면", value = '7' ),
                 discord.RadioGroupOption( label = "기타", value = '8' ),
+                discord.RadioGroupOption( label = "태스크 삭제하기", value = '9' ),
             ],
             required = False
         )
 
 
 class TaskEditModal( discord.ui.Modal ):
-    def __init__( self, taskID ):
+    def __init__( self, taskID: str ):
         super().__init__(
             title = "태스크 수정",
             timeout = None
@@ -220,8 +221,14 @@ class TaskEditModal( discord.ui.Modal ):
     async def on_submit( self, i: discord.Interaction ):
         await i.response.defer( ephemeral = True, thinking = True )
 
-        if not self.name.value and not self.desc.value and not self.category.component.value and not self.start.value and not self.end.value:   # type: ignore
+        if self.category.component.value == '9':   # type: ignore
+            deleteTaskFromToday( self.taskID )
+            await updateTimeline( i.client )    # type: ignore
+            await i.followup.send( "태스크가 삭제되었습니다." )
+
+        elif not self.name.value and not self.desc.value and not self.category.component.value and not self.start.value and not self.end.value:   # type: ignore
             await i.followup.send( "태스크가 수정되지 않았습니다." )
+
         else:
             task = editFinishedTask( self.taskID, self.name.value, self.desc.value, self.category.component.value, self.start.value, self.end.value ) # type: ignore
 
@@ -233,4 +240,5 @@ class TaskEditModal( discord.ui.Modal ):
             msg = await i.client.info.channel_log.fetch_message( msgID )    # type: ignore
             await msg.edit( embed = TaskEmbed( task, i.client.info ) )      # type: ignore
 
+            await updateTimeline( i.client )    # type: ignore
             await i.followup.send( "태스크가 성공적으로 수정되었습니다." )

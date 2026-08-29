@@ -33,6 +33,16 @@ def editTodaysTasks( tasks: list[ Task ] ):
         json.dump( today, f, indent = 4 )
 
 
+def deleteTaskFromToday( taskID: str ):
+    todaysTasks = getTodaysTasks()
+
+    for todaysTask in todaysTasks:
+        if todaysTask.ID == taskID:
+            todaysTasks.remove( todaysTask )
+
+    editTodaysTasks( todaysTasks )
+
+
 def editFinishedTask( taskID, name, desc, category, start, end ):
     todaysTasks = getTodaysTasks()
 

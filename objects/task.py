@@ -5,7 +5,7 @@ from .category import Category
 
 
 class Task:
-    def __init__( self, name: str, category: Category, desc = "", start = None, end: datetime | None = None, id: str | None = None, msgID: int | None = None ):
+    def __init__( self, name: str, category: Category, desc = "", start = None, end: datetime | None = None, id: str = "", msgID: int | None = None ):
         self.name = name
         self.category = category
         self.desc = desc
@@ -15,7 +15,7 @@ class Task:
         todaysRecord = today.get( self.start.strftime( "%Y%m%d" ) ) or []
         self.number = len( todaysRecord ) + 1
         self.end = end
-        self.ID = self.start.strftime( "%H%M%S" ) + str( ord( name[0] ) ) if id is None else id
+        self.ID = self.start.strftime( "%H%M%S" ) + str( ord( name[0] ) ) if id == "" else id
         self.msgID = msgID
 
 

@@ -138,17 +138,19 @@ class TaskManagementCog( Cog ):
             end = endDateTime
         )
 
-        task.record( False )
         minutes = round( ( endDateTime - startDateTime ).total_seconds() ) // 60
         durationString = minutesToHours( minutes )
-
 
         embed = TaskEmbed( task, self.bot.info )
         embed.description = re.sub( r"<t:\d+:R> 시작", f"{ durationString }동안 진행", str( embed.description ) )
 
+        msg = await self.bot.info.channel_log.send( embed = embed )
+        task.msgID = msg.id
+
+        task.record( False )
+
         await updateTimeline( i.client )   # type: ignore
 
-        await self.bot.info.channel_log.send( embed = embed )
         await i.followup.send( "태스크가 기록되었습니다." )
 
 

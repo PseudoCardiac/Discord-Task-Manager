@@ -19,10 +19,12 @@ class TaskManagementCog( Cog ):
     @discord.app_commands.rename( category = "카테고리" )
     @discord.app_commands.rename( min = "다시_알림_시간_분" )
     async def registerTask( self, i: discord.Interaction, name: str, category: discord.Role, desc: str = "", min: int = 0 ):
+        await i.response.defer( ephemeral = True, thinking = True )
+
         try:
             categoryObj = Category( self.bot.info.tag.index( category ) )
         except ValueError:
-            await i.response.send_message( "…파우스트는 카테고리가 아닙니다.", ephemeral = True, delete_after = 10 )
+            await i.followup.send( "…파우스트는 카테고리가 아닙니다." )
             return
         
         task = Task(
@@ -33,7 +35,7 @@ class TaskManagementCog( Cog ):
 
         embed = TaskEmbed( task, self.bot.info )
         msg = await self.bot.info.channel_log.send( embed = embed, view = TaskEmbedView( embed ) )
-        await i.response.send_message( "태스크가 등록되었습니다.", ephemeral = True, delete_after = 10 )
+        await i.followup.send( "태스크가 등록되었습니다." )
             
         task.msgID = msg.id
         task.push()
@@ -66,7 +68,7 @@ class TaskManagementCog( Cog ):
             json.dump( [], f )
 
         await updateTimeline( i.client ) # type: ignore
-        await i.edit_original_response( content = "진행 중인 태스크가 전부 완료 처리되었습니다." )
+        await i.followup.send( "진행 중인 태스크가 전부 완료 처리되었습니다." )
 
 
     @discord.app_commands.command( name = "태스크_중단", description = "진행 중인 태스크를 전부 중단 처리합니다." )
@@ -91,7 +93,7 @@ class TaskManagementCog( Cog ):
         with open( "data/current_tasks.json", 'w+', encoding = "UTF-8" ) as f:
             json.dump( [], f )
 
-        await i.edit_original_response( content = "진행 중인 태스크가 전부 중단 처리되었습니다." )
+        await i.followup.send( "진행 중인 태스크가 전부 중단 처리되었습니다." )
 
 
     @discord.app_commands.rename( name = "제목" )
@@ -101,10 +103,12 @@ class TaskManagementCog( Cog ):
     @discord.app_commands.rename( end = "종료_시간_6자리" )
     @discord.app_commands.command( name = "태스크_기록", description = "완료된 태스크를 등록합니다." )
     async def recordTask( self, i: discord.Interaction, name: str, category: discord.Role, start: str, end: str | None = None, desc: str = "" ):
+        await i.response.defer( ephemeral = True, thinking = True )
+        
         try:
             categoryObj = Category( self.bot.info.tag.index( category ) )
         except ValueError:
-            await i.response.send_message( "…파우스트는 카테고리가 아닙니다.", ephemeral = True, delete_after = 10 )
+            await i.followup.send( "…파우스트는 카테고리가 아닙니다." )
             return
 
         try:
@@ -118,7 +122,7 @@ class TaskManagementCog( Cog ):
                 endTime = datetime.datetime.strptime( end, "%H%M%S" ).time()
             endDateTime = datetime.datetime.combine( today, endTime, tz )
         except ValueError:
-            await i.response.send_message( "시간 형식이 잘못되었습니다.", ephemeral = True, delete_after = 10 )
+            await i.followup.send( "시간 형식이 잘못되었습니다." )
             return
 
         task = Task(
@@ -140,15 +144,17 @@ class TaskManagementCog( Cog ):
         await updateTimeline( i.client )   # type: ignore
 
         await self.bot.info.channel_log.send( embed = embed )
-        await i.response.send_message( "태스크가 기록되었습니다.", ephemeral = True, delete_after = 10 )
+        await i.followup.send( "태스크가 기록되었습니다." )
 
 
     @discord.app_commands.command( name = "태스크_수정", description = "완료된 태스크를 수정합니다." )
     async def editTask( self, i: discord.Interaction ):
+        await i.response.defer( ephemeral = True, thinking = True )
+
         if not getTodaysTasks():
-            await i.response.send_message( "현재 수정 가능한 태스크가 없습니다.", ephemeral = True, delete_after = 10 )
+            await i.followup.send( "현재 수정 가능한 태스크가 없습니다." )
         else:
-            await i.response.send_message( view = TaskEditView(), ephemeral = True, delete_after = 10 )
+            await i.followup.send( view = TaskEditView() )
 
 
 class TaskEditView( discord.ui.View ):
@@ -212,8 +218,10 @@ class TaskEditModal( discord.ui.Modal ):
     end = discord.ui.TextInput( label = "종료 시간 (6자리)", style = discord.TextStyle.short, required = False )
 
     async def on_submit( self, i: discord.Interaction ):
+        await i.response.defer( ephemeral = True, thinking = True )
+
         if not self.name.value and not self.desc.value and not self.category.component.value and not self.start.value and not self.end.value:   # type: ignore
-            await i.response.send_message( "태스크가 수정되지 않았습니다.", ephemeral = True, delete_after = 10 )
+            await i.followup.send( "태스크가 수정되지 않았습니다." )
         else:
             task = editFinishedTask( self.taskID, self.name.value, self.desc.value, self.category.component.value, self.start.value, self.end.value ) # type: ignore
 
@@ -225,4 +233,4 @@ class TaskEditModal( discord.ui.Modal ):
             msg = await i.client.info.channel_log.fetch_message( msgID )    # type: ignore
             await msg.edit( embed = TaskEmbed( task, i.client.info ) )      # type: ignore
 
-            await i.response.send_message( "태스크가 성공적으로 수정되었습니다.", ephemeral = True, delete_after = 10 )
+            await i.followup.send( "태스크가 성공적으로 수정되었습니다." )

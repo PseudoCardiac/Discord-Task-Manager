@@ -17,7 +17,8 @@ class NotifyLaterModal( discord.ui.Modal ):
     minutes = discord.ui.TextInput( label = "다시 알릴 시간 (분)", style = discord.TextStyle.short )
 
     async def on_submit( self, interaction: discord.Interaction ):
-        await interaction.response.send_message( f"{ minutesToHours( int( self.minutes.value ) ) } 후 다시 알리겠습니다.", ephemeral = True, delete_after = 10 )
+        # await interaction.response.defer( ephemeral = True, thinking = True )
+        await interaction.response.send_message( f"{ minutesToHours( int( self.minutes.value ) ) } 후 다시 알리겠습니다.", ephemeral = True )
         await self.action( int( self.minutes.value ), self.task, interaction.client )
 
 

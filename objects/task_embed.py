@@ -45,10 +45,14 @@ class FinishButton( discord.ui.Button ):
         self.parentEmbed = parentEmbed
 
     async def callback( self, interaction: discord.Interaction ):
+        await interaction.response.defer( ephemeral = True, thinking = True )
+
         async def confirm( i: discord.Interaction ):
+            await i.response.defer( ephemeral = True, thinking = True )
+
             result = self.parentEmbed.task.pop()
             if result is False:
-                await i.response.send_message( "태스크를 찾지 못했습니다. 무언가 잘못되었군요.", ephemeral = True, delete_after = 10 )
+                await i.followup.send( "태스크를 찾지 못했습니다. 무언가 잘못되었군요." )
                 return
 
             # ===== 원본 메시지 수정 =====
@@ -60,13 +64,13 @@ class FinishButton( discord.ui.Button ):
 
             result.record()
             await updateTimeline( interaction.client ) # type: ignore
-            await i.response.send_message( "태스크가 완료되었습니다.", ephemeral = True, delete_after = 10 )
+            await i.followup.send( "태스크가 완료되었습니다." )
 
         async def cancel( i: discord.Interaction ):
             await i.response.defer()
             await i.message.delete()    # type: ignore
 
-        await interaction.response.send_message( content = "태스크를 완료하시겠습니까?", view = ConfirmView( confirm, cancel ), ephemeral = True, delete_after = 10 )
+        await interaction.followup.send( content = "태스크를 완료하시겠습니까?", view = ConfirmView( confirm, cancel ) )
 
 
 class TextEditButton( discord.ui.Button ):
@@ -96,12 +100,14 @@ class TextEditModal( discord.ui.Modal ):
 
 
     async def on_submit( self, i: discord.Interaction ):
+        await i.response.defer( ephemeral = True, thinking = True )
+
         if not self.name and not self.desc:
-            await i.response.send_message( "태스크가 수정되지 않았습니다. 무언가 잘못되었군요.", ephemeral = True, delete_after = 10 )
+            await i.followup.send( "태스크가 수정되지 않았습니다. 무언가 잘못되었군요." )
         else:
             self.button.parentEmbed.task.edit( name = self.name.value, desc = self.desc.value )
             await i.message.edit( embed = TaskEmbed( self.button.parentEmbed.task, i.client.info ) )    # type: ignore
-            await i.response.send_message( "태스크가 성공적으로 수정되었습니다.", ephemeral = True, delete_after = 10 )
+            await i.followup.send( "태스크가 성공적으로 수정되었습니다." )
 
 
 class CategoryEditButton( discord.ui.Button ):
@@ -115,7 +121,8 @@ class CategoryEditButton( discord.ui.Button ):
 
 
     async def callback( self, interaction: discord.Interaction ):
-        await interaction.response.send_message( view = CategoryEditView( self, interaction.message ), ephemeral = True, delete_after = 10 ) # type: ignore
+        await interaction.response.defer( ephemeral = True, thinking = True )
+        await interaction.followup.send( view = CategoryEditView( self, interaction.message ) ) # type: ignore
 
 
 class CategoryEditView( discord.ui.View ):
@@ -133,15 +140,17 @@ class CategorySelect( discord.ui.RoleSelect ):
 
 
     async def callback( self, interaction: discord.Interaction ):
+        await interaction.response.defer( ephemeral = True, thinking = True )
+
         category = self.values[0]
 
         if category not in interaction.client.info.tag: # type: ignore
-            await interaction.response.send_message( "…파우스트는 카테고리가 아닙니다.", ephemeral = True, delete_after = 10 )
+            await interaction.followup.send( "…파우스트는 카테고리가 아닙니다." )
             return
 
         self.button.parentEmbed.task.edit( category = Category( interaction.client.info.tag.index( category ) ) )   # type: ignore
         await self.msg.edit( embed = TaskEmbed( self.button.parentEmbed.task, interaction.client.info ) )    # type: ignore
-        await interaction.response.send_message( "태스크가 성공적으로 수정되었습니다.", ephemeral = True, delete_after = 10 )
+        await interaction.followup.send( "태스크가 성공적으로 수정되었습니다." )
 
 
 class AbortButton( discord.ui.Button ):
@@ -154,10 +163,14 @@ class AbortButton( discord.ui.Button ):
         self.parentEmbed = parentEmbed
 
     async def callback( self, interaction: discord.Interaction ):
+        await interaction.response.defer( ephemeral = True, thinking = True )
+
         async def confirm( i: discord.Interaction ):
+            await i.response.defer( ephemeral = True, thinking = True )
+
             result = self.parentEmbed.task.pop()
             if result is False:
-                await i.response.send_message( "태스크를 찾지 못했습니다. 무언가 잘못되었군요.", ephemeral = True, delete_after = 10 )
+                await i.followup.send( "태스크를 찾지 못했습니다. 무언가 잘못되었군요." )
                 return
 
             # ===== 원본 메시지 수정 =====
@@ -167,13 +180,13 @@ class AbortButton( discord.ui.Button ):
             await interaction.message.edit( embed = embed, view = None )  # type: ignore
             # ============================
 
-            await i.response.send_message( "태스크가 성공적으로 중단되었습니다.", ephemeral = True, delete_after = 10 )
+            await i.followup.send( "태스크가 성공적으로 중단되었습니다." )
 
         async def cancel( i: discord.Interaction ):
             await i.response.defer()
             await i.message.delete()    # type: ignore
 
-        await interaction.response.send_message( content = "태스크를 중단하시겠습니까?", view = ConfirmView( confirm, cancel ), ephemeral = True, delete_after = 10 )
+        await interaction.followup.send( content = "태스크를 중단하시겠습니까?", view = ConfirmView( confirm, cancel ) )
 
 
 class ConfirmView( discord.ui.View ):

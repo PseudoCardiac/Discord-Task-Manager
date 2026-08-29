@@ -132,5 +132,5 @@ class RefreshButton( discord.ui.Button ):
 
     async def callback( self, interaction: discord.Interaction ):
         await updateTimeline( interaction.client ) # type: ignore
-        # await interaction.response.send_message( "대시보드를 성공적으로 새로고침했습니다.", ephemeral = True, delete_after = 10 )
+        # await interaction.response.send_message( "대시보드를 성공적으로 새로고침했습니다." )
         await interaction.response.defer()

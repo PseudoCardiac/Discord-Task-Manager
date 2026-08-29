@@ -50,7 +50,7 @@ class TaskManagementCog( Cog ):
             task = Task.toTaskObj( currentTask )
             task.record()
 
-        with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
+        with open( "data/current_tasks.json", 'w+', encoding = "UTF-8" ) as f:
             json.dump( [], f )
 
         await updateTimeline( i.client ) # type: ignore
@@ -59,7 +59,7 @@ class TaskManagementCog( Cog ):
 
     @discord.app_commands.command( name = "태스크_중단", description = "진행 중인 태스크를 전부 중단 처리합니다." )
     async def abortTask( self, i: discord.Interaction ):
-        with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
+        with open( "data/current_tasks.json", 'w+', encoding = "UTF-8" ) as f:
             json.dump( [], f )
 
         await i.response.send_message( "진행 중인 태스크가 전부 중단 처리되었습니다.", ephemeral = True, delete_after = 10 )

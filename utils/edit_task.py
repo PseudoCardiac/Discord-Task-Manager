@@ -28,7 +28,7 @@ def editTodaysTasks( tasks: list[ Task ] ):
 
     today[ todayStr ] = list( map( lambda x: x.toJsonObj(), tasks ) )
 
-    with open( "data/today.json", 'w', encoding = "UTF-8" ) as f:
+    with open( "data/today.json", 'w+', encoding = "UTF-8" ) as f:
         json.dump( today, f, indent = 4 )
 
 

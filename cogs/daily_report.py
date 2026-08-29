@@ -31,7 +31,7 @@ class DailyReportCog( Cog ):
         cutCurrentTasks()
 
         # 어제자 작업 초기화
-        with open( "data/today.json", 'w' ) as f:
+        with open( "data/today.json", 'w+' ) as f:
             json.dump( {}, f )
 
         await updateTimeline( self.faust, True )

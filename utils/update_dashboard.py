@@ -103,7 +103,7 @@ async def createTimeline( faust: "Faust", targetDate: datetime.date | None = Non
 
     msg = await faust.info.channel_timeline.send( file = chart, embed = embed, view = TimelineView() )
 
-    with open( "data/latest_timeline_msg_id.txt", 'w' ) as f:
+    with open( "data/latest_timeline_msg_id.txt", 'w+' ) as f:
         f.write( str( msg.id ) )
 
     return msg

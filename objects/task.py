@@ -62,7 +62,7 @@ class Task:
 
         currentTasks.append( self.toJsonObj() )
         
-        with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
+        with open( "data/current_tasks.json", 'w+', encoding = "UTF-8" ) as f:
             json.dump( currentTasks, f, indent = 4 )
 
 
@@ -94,7 +94,7 @@ class Task:
 
         task = currentTasks.pop( idx )
 
-        with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
+        with open( "data/current_tasks.json", 'w+', encoding = "UTF-8" ) as f:
             json.dump( currentTasks, f, indent = 4 )
 
         return Task.toTaskObj( task )
@@ -134,7 +134,7 @@ class Task:
         else:   # 오늘 기록이 없음
             today[ self.start.strftime( "%Y%m%d" ) ] = [ self.toJsonObj() ]
 
-        with open( "data/today.json", 'w', encoding = "UTF-8" ) as f:
+        with open( "data/today.json", 'w+', encoding = "UTF-8" ) as f:
             json.dump( today, f, indent = 4 )
 
 

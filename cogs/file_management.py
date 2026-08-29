@@ -28,15 +28,15 @@ class FileManagementCog( Cog ):
         text = b.decode( "UTF-8" )
 
         if name == "current_tasks.json":
-            with open( "data/current_tasks.json", 'w', encoding = "UTF-8" ) as f:
+            with open( "data/current_tasks.json", 'w+', encoding = "UTF-8" ) as f:
                 f.write( text )
 
         elif name == "today.json":
-            with open( "data/today.json", 'w', encoding = "UTF-8" ) as f:
+            with open( "data/today.json", 'w+', encoding = "UTF-8" ) as f:
                 f.write( text )
 
         elif name == "game_blacklist.txt":
-            with open( "data/game_blacklist.txt", 'w', encoding = "UTF-8" ) as f:
+            with open( "data/game_blacklist.txt", 'w+', encoding = "UTF-8" ) as f:
                 f.write( text )
 
         else:
@@ -48,10 +48,10 @@ class FileManagementCog( Cog ):
 
     @discord.app_commands.command( name = "초기화", description = "블랙리스트를 제외한 시스템 파일을 초기화합니다." )
     async def resetJson( self, i: discord.Interaction ):
-        with open( "data/current_tasks.json", 'w' ) as f:
+        with open( "data/current_tasks.json", 'w+' ) as f:
             json.dump( [], f )
 
-        with open( "data/today.json", 'w' ) as f:
+        with open( "data/today.json", 'w+' ) as f:
             json.dump( {}, f )
 
         genChart()

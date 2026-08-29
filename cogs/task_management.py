@@ -58,11 +58,13 @@ class TaskManagementCog( Cog ):
             if task.msgID is None:
                 continue
 
-            msg = await self.bot.info.channel_log.fetch_message( task.msgID )
-            embed = msg.embeds[ 0 ]
-
-            editTaskEmbedFinished( embed, task )
-            await msg.edit( embed = embed, view = None )
+            try:
+                msg = await self.bot.info.channel_log.fetch_message( task.msgID )
+                embed = msg.embeds[ 0 ]
+                editTaskEmbedFinished( embed, task )
+                await msg.edit( embed = embed, view = None )
+            except discord.errors.NotFound:
+                continue
 
         with open( "data/current_tasks.json", 'w+', encoding = "UTF-8" ) as f:
             json.dump( [], f )
@@ -84,11 +86,14 @@ class TaskManagementCog( Cog ):
             if task.msgID is None:
                 continue
 
-            msg = await self.bot.info.channel_log.fetch_message( task.msgID )
-            embed = msg.embeds[ 0 ]
+            try:
+                msg = await self.bot.info.channel_log.fetch_message( task.msgID )
+                embed = msg.embeds[ 0 ]
 
-            editTaskEmbedAborted( embed )
-            await msg.edit( embed = embed, view = None )
+                editTaskEmbedAborted( embed )
+                await msg.edit( embed = embed, view = None )
+            except discord.errors.NotFound:
+                continue
 
         with open( "data/current_tasks.json", 'w+', encoding = "UTF-8" ) as f:
             json.dump( [], f )
@@ -234,11 +239,14 @@ class TaskEditModal( discord.ui.Modal ):
 
             msgID = task.msgID  # type: ignore
             if msgID is None:
-                assert Exception( "수정할 태스크 임베드의 메시지 ID 정보가 없음" )
+                assert Exception( "수정할 태스크의 메시지 ID 정보가 없음" )
                 return
 
-            msg = await i.client.info.channel_log.fetch_message( msgID )    # type: ignore
-            await msg.edit( embed = TaskEmbed( task, i.client.info ) )      # type: ignore
+            try:
+                msg = await i.client.info.channel_log.fetch_message( msgID )    # type: ignore
+                await msg.edit( embed = TaskEmbed( task, i.client.info ) )      # type: ignore
+            except discord.errors.NotFound:
+                pass
 
             await updateTimeline( i.client )    # type: ignore
             await i.followup.send( "태스크가 성공적으로 수정되었습니다." )

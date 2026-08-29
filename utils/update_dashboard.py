@@ -38,7 +38,7 @@ async def getLatestTimelineMessage( faust: "Faust" ):
 
     try:
         return await faust.info.channel_timeline.fetch_message( int( msgID ) )
-    except discord.NotFound:
+    except discord.errors.NotFound:
         return False
     except ValueError:
         return False

@@ -35,4 +35,4 @@ class DailyReportCog( Cog ):
             json.dump( {}, f )
 
         await updateTimeline( self.faust, True )
-        await updateTimeline( self.faust )
+        # await updateTimeline( self.faust )

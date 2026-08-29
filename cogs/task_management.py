@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from bot import Faust
 from objects import Task, Category, TaskEmbed, TaskEmbedView
 from .timer import setTimer
-from utils import minutesToHours, updateTimeline, getTodaysTasks, editFinishedTask
+from utils import minutesToHours, updateTimeline, getTodaysTasks, editFinishedTask, editTaskEmbedFinished, editTaskEmbedAborted
 
 
 class TaskManagementCog( Cog ):
@@ -32,8 +32,8 @@ class TaskManagementCog( Cog ):
         )
 
         embed = TaskEmbed( task, self.bot.info )
-        await self.bot.info.channel_log.send( embed = embed, view = TaskEmbedView( embed ) )
-        msg = await i.response.send_message( "태스크가 등록되었습니다.", ephemeral = True, delete_after = 10 )
+        msg = await self.bot.info.channel_log.send( embed = embed, view = TaskEmbedView( embed ) )
+        await i.response.send_message( "태스크가 등록되었습니다.", ephemeral = True, delete_after = 10 )
         if min:
             await setTimer( min, task, i.client )   # type: ignore
             
@@ -43,6 +43,8 @@ class TaskManagementCog( Cog ):
 
     @discord.app_commands.command( name = "태스크_완료", description = "진행 중인 태스크를 전부 완료 처리합니다." )
     async def finishTask( self, i: discord.Interaction ):
+        await i.response.defer( ephemeral = True, thinking = True )
+
         with open( "data/current_tasks.json", 'r', encoding = "UTF-8" ) as f:
             currentTasks: list[ dict[ str, str ] ] = json.load( f )
 
@@ -50,19 +52,45 @@ class TaskManagementCog( Cog ):
             task = Task.toTaskObj( currentTask )
             task.record()
 
+            if task.msgID is None:
+                continue
+
+            msg = await self.bot.info.channel_log.fetch_message( task.msgID )
+            embed = msg.embeds[ 0 ]
+
+            editTaskEmbedFinished( embed, task )
+            await msg.edit( embed = embed, view = None )
+
         with open( "data/current_tasks.json", 'w+', encoding = "UTF-8" ) as f:
             json.dump( [], f )
 
         await updateTimeline( i.client ) # type: ignore
-        await i.response.send_message( "진행 중인 태스크가 전부 완료 처리되었습니다.", ephemeral = True, delete_after = 10 )
+        await i.edit_original_response( content = "진행 중인 태스크가 전부 완료 처리되었습니다." )
 
 
     @discord.app_commands.command( name = "태스크_중단", description = "진행 중인 태스크를 전부 중단 처리합니다." )
     async def abortTask( self, i: discord.Interaction ):
+        await i.response.defer( ephemeral = True, thinking = True )
+
+        with open( "data/current_tasks.json", 'r', encoding = "UTF-8" ) as f:
+            currentTasks: list[ dict[ str, str ] ] = json.load( f )
+
+        for currentTask in currentTasks:
+            task = Task.toTaskObj( currentTask )
+
+            if task.msgID is None:
+                continue
+
+            msg = await self.bot.info.channel_log.fetch_message( task.msgID )
+            embed = msg.embeds[ 0 ]
+
+            editTaskEmbedAborted( embed )
+            await msg.edit( embed = embed, view = None )
+
         with open( "data/current_tasks.json", 'w+', encoding = "UTF-8" ) as f:
             json.dump( [], f )
 
-        await i.response.send_message( "진행 중인 태스크가 전부 중단 처리되었습니다.", ephemeral = True, delete_after = 10 )
+        await i.edit_original_response( content = "진행 중인 태스크가 전부 중단 처리되었습니다." )
 
 
     @discord.app_commands.rename( name = "제목" )
@@ -107,13 +135,10 @@ class TaskManagementCog( Cog ):
 
         embed = TaskEmbed( task, self.bot.info )
         embed.description = re.sub( r"<t:\d+:R> 시작", f"{ durationString }동안 진행", str( embed.description ) )
-        view = TaskEmbedView( embed )
-        for item in view.children:
-            item.disabled = True    # type: ignore
 
         await updateTimeline( i.client )   # type: ignore
 
-        await self.bot.info.channel_log.send( embed = embed, view = view )
+        await self.bot.info.channel_log.send( embed = embed )
         await i.response.send_message( "태스크가 기록되었습니다.", ephemeral = True, delete_after = 10 )
 
 

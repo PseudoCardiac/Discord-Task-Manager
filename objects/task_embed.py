@@ -6,7 +6,7 @@ from .category import Category
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .task import Task
-from utils import minutesToHours, updateTimeline
+from utils import minutesToHours, updateTimeline, editTaskEmbedFinished, editTaskEmbedAborted
 
 
 weekdays = [ '월', '화', '수', '목', '금', '토', '일' ]
@@ -52,15 +52,10 @@ class FinishButton( discord.ui.Button ):
                 return
 
             # ===== 원본 메시지 수정 =====
-            minutes = round( ( datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) - result.start ).total_seconds() ) // 60
-            durationString = minutesToHours( minutes )
-            embed = interaction.message.embeds[0]   # type: ignore
-            embed.description = re.sub( r"<t:\d+:R> 시작", f"{ durationString }동안 진행", str( embed.description ) )
+            embed = interaction.message.embeds[ 0 ]   # type: ignore
+            editTaskEmbedFinished( embed, result )
 
-            for item in self.view.children: # type: ignore
-                item.disabled = True
-
-            await interaction.message.edit( embed = embed, view = self.view )  # type: ignore
+            await interaction.message.edit( embed = embed, view = None )  # type: ignore
             # ============================
 
             result.record()
@@ -71,7 +66,7 @@ class FinishButton( discord.ui.Button ):
             await i.response.defer()
             await i.message.delete()    # type: ignore
 
-        await interaction.response.send_message( view = ConfirmView( confirm, cancel ), ephemeral = True, delete_after = 10 )
+        await interaction.response.send_message( content = "태스크를 완료하시겠습니까?", view = ConfirmView( confirm, cancel ), ephemeral = True, delete_after = 10 )
 
 
 class TextEditButton( discord.ui.Button ):
@@ -166,17 +161,10 @@ class AbortButton( discord.ui.Button ):
                 return
 
             # ===== 원본 메시지 수정 =====
-
             embed = interaction.message.embeds[0]   # type: ignore
-            embed.title = "~~" + str( embed.title ) + "~~"
-            nowTimestamp = round( datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).timestamp() )
-            embed.description = re.sub( r"<t:\d+:R> 시작", f"<t:{ nowTimestamp }:R> 중단", str( embed.description ) )
-            embed.description = "~~" + str( embed.description ) + "~~"
+            editTaskEmbedAborted( embed )
 
-            for item in self.view.children: # type: ignore
-                item.disabled = True
-
-            await interaction.message.edit( embed = embed, view = self.view )  # type: ignore
+            await interaction.message.edit( embed = embed, view = None )  # type: ignore
             # ============================
 
             await i.response.send_message( "태스크가 성공적으로 중단되었습니다.", ephemeral = True, delete_after = 10 )
@@ -185,7 +173,7 @@ class AbortButton( discord.ui.Button ):
             await i.response.defer()
             await i.message.delete()    # type: ignore
 
-        await interaction.response.send_message( view = ConfirmView( confirm, cancel ), ephemeral = True, delete_after = 10 )
+        await interaction.response.send_message( content = "태스크를 중단하시겠습니까?", view = ConfirmView( confirm, cancel ), ephemeral = True, delete_after = 10 )
 
 
 class ConfirmView( discord.ui.View ):

@@ -1,7 +1,8 @@
-import json, discord
+import json, discord, re
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from objects.task import Task
+from .minutes_to_hours import minutesToHours
 
 
 def getTodaysTasks():
@@ -52,3 +53,16 @@ def editFinishedTask( taskID, name, desc, category, start, end ):
 
 #     msg = await faust.info.channel_log.fetch_message( msgID )
 #     await msg.edit( embed = TaskEmbed( task, faust.info ) )
+
+
+def editTaskEmbedFinished( embed: discord.Embed, task: Task ):
+    minutes = round( ( datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) - task.start ).total_seconds() ) // 60
+    durationString = minutesToHours( minutes )
+    embed.description = re.sub( r"<t:\d+:R> 시작", f"{ durationString }동안 진행", str( embed.description ) )
+
+
+def editTaskEmbedAborted( embed: discord.Embed ):
+    embed.title = "~~" + str( embed.title ) + "~~"
+    nowTimestamp = round( datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).timestamp() )
+    embed.description = re.sub( r"<t:\d+:R> 시작", f"<t:{ nowTimestamp }:R> 중단", str( embed.description ) )
+    embed.description = "~~" + str( embed.description ) + "~~"

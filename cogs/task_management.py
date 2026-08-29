@@ -34,11 +34,12 @@ class TaskManagementCog( Cog ):
         embed = TaskEmbed( task, self.bot.info )
         msg = await self.bot.info.channel_log.send( embed = embed, view = TaskEmbedView( embed ) )
         await i.response.send_message( "태스크가 등록되었습니다.", ephemeral = True, delete_after = 10 )
-        if min:
-            await setTimer( min, task, i.client )   # type: ignore
             
         task.msgID = msg.id
         task.push()
+
+        if min:
+            await setTimer( min, task, i.client )   # type: ignore
 
 
     @discord.app_commands.command( name = "태스크_완료", description = "진행 중인 태스크를 전부 완료 처리합니다." )

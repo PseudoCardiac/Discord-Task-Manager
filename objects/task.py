@@ -171,7 +171,7 @@ class Task:
             start = datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).replace( hour = hour, minute = minute, second = second )
 
             self.start = start
-            self.id = start.strftime( "%H%M%S" ) + str( ord( self.name[0] ) )
+            self.ID = start.strftime( "%H%M%S" ) + str( ord( self.name[0] ) )
         if end != "":
             hour = int( end[ :2 ] )
             minute = int( end[ 2:4 ] )

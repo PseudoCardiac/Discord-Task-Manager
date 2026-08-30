@@ -43,12 +43,13 @@ def deleteTaskFromToday( taskID: str ):
     editTodaysTasks( todaysTasks )
 
 
-def editFinishedTask( taskID, name, desc, category, start, end ):
+def editFinishedTask( taskID: str, name, desc, category, start, end ):
     todaysTasks = getTodaysTasks()
 
     for task in todaysTasks:
         if task.ID == taskID:
             task.editFull( name, category, desc, start, end )
+            editTodaysTasks( todaysTasks )
             return task
     else:
         assert Exception( "주어진 ID와 일치하는 태스크를 찾을 수 없었음" )

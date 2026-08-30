@@ -52,15 +52,13 @@ def editFinishedTask( taskID: str, name, desc, category, start, end ):
             editTodaysTasks( todaysTasks )
             return task
     else:
-        assert Exception( "주어진 ID와 일치하는 태스크를 찾을 수 없었음" )
-        return
+        raise Exception( "주어진 ID와 일치하는 태스크를 찾을 수 없었음" )
 
 
 # async def editFinishedTaskEmbed( faust: "Faust", task: Task ):
 #     msgID = task.msgID
 #     if msgID is None:
-#         assert Exception( "수정할 태스크 임베드의 메시지 ID 정보가 없음" )
-#         return
+#         raise Exception( "수정할 태스크 임베드의 메시지 ID 정보가 없음" )
 
 #     msg = await faust.info.channel_log.fetch_message( msgID )
 #     await msg.edit( embed = TaskEmbed( task, faust.info ) )

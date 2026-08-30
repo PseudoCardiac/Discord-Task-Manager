@@ -241,7 +241,8 @@ class TaskEditModal( discord.ui.Modal ):
 
             msgID = task.msgID  # type: ignore
             if msgID is None:
-                assert Exception( "수정할 태스크의 메시지 ID 정보가 없음" )
+                # raise Exception( "수정할 태스크의 메시지 ID 정보가 없음" )
+                await updateTimeline( i.client )    # type: ignore
                 await i.followup.send( "태스크는 성공적으로 수정되었으나, 태스크 임베드 편집에는 실패했습니다." )
                 return
 

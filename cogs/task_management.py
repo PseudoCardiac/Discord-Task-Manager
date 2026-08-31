@@ -248,9 +248,6 @@ class TaskEditModal( discord.ui.Modal ):
             await updateTimeline( i.client )    # type: ignore
             await i.followup.send( "태스크가 삭제되었습니다." )
 
-        elif not self.name.value and not self.desc.value and not self.category.component.value and not self.start.value and not self.end.value:   # type: ignore
-            await i.followup.send( "태스크가 수정되지 않았습니다." )
-
         else:
             editedTask = editFinishedTask( self.task, self.name.value, self.desc.value, self.category.component.value, self.start.value, self.end.value ) # type: ignore
 

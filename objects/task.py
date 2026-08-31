@@ -177,3 +177,30 @@ class Task:
             minute = int( end[ 2:4 ] )
             second = int( end[ 4: ] )
             self.end = datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).replace( hour = hour, minute = minute, second = second )
+
+
+    @staticmethod
+    def get( id: str ):
+        """
+        진행 중인 태스크와 완료된 태스크 목록에서 id를 가진 태스크를 찾는다.
+        """
+        # 완료된 목록에서 찾기
+        with open( "data/today.json", 'r', encoding = "UTF-8" ) as f:
+            todays: dict[ str, list[ dict[ str, str ] ] ] = json.load( f )
+
+        today = todays.get( datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ).strftime( "%Y%m%d" ) )
+        if today:
+            for task in today:
+                if task[ "id" ] == id:
+                    return Task.toTaskObj( task )
+
+        # 완료된 목록에 없을 시, 진행 중인 태스크 목록에서 찾기
+        with open( "data/current_tasks.json", 'r', encoding = "UTF-8" ) as f:
+            currentTasks: list[ dict[ str, str ] ] = json.load( f )
+
+        for task in currentTasks:
+            if task[ "id" ] == id:
+                return Task.toTaskObj( task )
+
+        else:
+            return False

@@ -184,23 +184,29 @@ class TaskEditSelect( discord.ui.Select ):
         )
 
     async def callback( self, interaction: discord.Interaction ):
-        await interaction.response.send_modal( TaskEditModal( self.values[0] ) )
         self.disabled = True
+
+        task = Task.get( self.values[0] )
+        if task is False:
+            await interaction.response.send_message( "태스크를 찾지 못했습니다. 무언가 잘못되었군요." )
+            return
+
+        await interaction.response.send_modal( TaskEditModal( task ) )
 
 
 class CategoryRadioGroup( discord.ui.RadioGroup ):
-    def __init__( self ):
+    def __init__( self, task: Task ):
         super().__init__(
             options = [
-                discord.RadioGroupOption( label = "대학", value = '0' ),
-                discord.RadioGroupOption( label = "생활", value = '1' ),
-                discord.RadioGroupOption( label = "운동", value = '2' ),
-                discord.RadioGroupOption( label = "휴식", value = '3' ),
-                discord.RadioGroupOption( label = "공부", value = '4' ),
-                discord.RadioGroupOption( label = "작업", value = '5' ),
-                discord.RadioGroupOption( label = "게임", value = '6' ),
-                discord.RadioGroupOption( label = "수면", value = '7' ),
-                discord.RadioGroupOption( label = "기타", value = '8' ),
+                discord.RadioGroupOption( label = "대학", value = '0', default = task.category == 0 ),
+                discord.RadioGroupOption( label = "생활", value = '1', default = task.category == 1 ),
+                discord.RadioGroupOption( label = "운동", value = '2', default = task.category == 2 ),
+                discord.RadioGroupOption( label = "휴식", value = '3', default = task.category == 3 ),
+                discord.RadioGroupOption( label = "공부", value = '4', default = task.category == 4 ),
+                discord.RadioGroupOption( label = "작업", value = '5', default = task.category == 5 ),
+                discord.RadioGroupOption( label = "게임", value = '6', default = task.category == 6 ),
+                discord.RadioGroupOption( label = "수면", value = '7', default = task.category == 7 ),
+                discord.RadioGroupOption( label = "기타", value = '8', default = task.category == 8 ),
                 discord.RadioGroupOption( label = "태스크 삭제하기", value = '9' ),
             ],
             required = False
@@ -208,28 +214,37 @@ class CategoryRadioGroup( discord.ui.RadioGroup ):
 
 
 class TaskEditModal( discord.ui.Modal ):
-    def __init__( self, taskID: str ):
+    def __init__( self, task: Task ):
         super().__init__(
             title = "태스크 수정",
             timeout = None
         )
-        self.taskID = taskID
+        self.task = task
 
-    name = discord.ui.TextInput( label = "제목", style = discord.TextStyle.short, required = False )
-    desc = discord.ui.TextInput( label = "세부 사항", style = discord.TextStyle.short, required = False )
-    category = discord.ui.Label(
-        text = "카테고리",
-        component = CategoryRadioGroup()
-        # component = discord.ui.RoleSelect()
-    )
-    start = discord.ui.TextInput( label = "시작 시간 (6자리)", style = discord.TextStyle.short, required = False )
-    end = discord.ui.TextInput( label = "종료 시간 (6자리)", style = discord.TextStyle.short, required = False )
+        self.name = discord.ui.TextInput( label = "제목", style = discord.TextStyle.short, required = False, placeholder = self.task.name )
+        self.desc = discord.ui.TextInput( label = "세부 사항", style = discord.TextStyle.short, required = False, placeholder = self.task.desc )
+        self.category = discord.ui.Label(
+            text = "카테고리",
+            component = CategoryRadioGroup( self.task )
+            # component = discord.ui.RoleSelect()
+        )
+        self.start = discord.ui.TextInput( label = "시작 시간 (6자리)", style = discord.TextStyle.short, required = False,
+                                           placeholder = self.task.start.strftime( "%H%M%S" ) )
+        self.end = discord.ui.TextInput( label = "종료 시간 (6자리)", style = discord.TextStyle.short, required = False,
+                                         placeholder = self.task.end.strftime( "%H%M%S" ) ) # type: ignore
+
+        self.add_item( self.name )
+        self.add_item( self.desc )
+        self.add_item( self.category )
+        self.add_item( self.start )
+        self.add_item( self.end )
+
 
     async def on_submit( self, i: discord.Interaction ):
         await i.response.defer( ephemeral = True, thinking = True )
 
         if self.category.component.value == '9':   # type: ignore
-            deleteTaskFromToday( self.taskID )
+            deleteTaskFromToday( self.task )
             await updateTimeline( i.client )    # type: ignore
             await i.followup.send( "태스크가 삭제되었습니다." )
 
@@ -237,9 +252,9 @@ class TaskEditModal( discord.ui.Modal ):
             await i.followup.send( "태스크가 수정되지 않았습니다." )
 
         else:
-            task = editFinishedTask( self.taskID, self.name.value, self.desc.value, self.category.component.value, self.start.value, self.end.value ) # type: ignore
+            editedTask = editFinishedTask( self.task, self.name.value, self.desc.value, self.category.component.value, self.start.value, self.end.value ) # type: ignore
 
-            msgID = task.msgID  # type: ignore
+            msgID = editedTask.msgID  # type: ignore
             if msgID is None:
                 # raise Exception( "수정할 태스크의 메시지 ID 정보가 없음" )
                 await updateTimeline( i.client )    # type: ignore
@@ -248,7 +263,7 @@ class TaskEditModal( discord.ui.Modal ):
 
             try:
                 msg = await i.client.info.channel_log.fetch_message( msgID )    # type: ignore
-                await msg.edit( embed = TaskEmbed( task, i.client.info ) )      # type: ignore
+                await msg.edit( embed = TaskEmbed( editedTask, i.client.info ) )      # type: ignore
             except discord.errors.NotFound:
                 pass
 

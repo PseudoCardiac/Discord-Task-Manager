@@ -18,4 +18,5 @@ def cutCurrentTasks():
             continue
         
         taskRight.start = now
+        taskRight.ID = now.strftime( "%H%M%S" ) + str( ord( taskRight.name[0] ) )
         taskRight.push()

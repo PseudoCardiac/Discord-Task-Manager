@@ -2,7 +2,8 @@ import discord, datetime, json
 from zoneinfo import ZoneInfo
 from discord.ext import tasks
 from discord.ext.commands import Cog
-from utils import updateTimeline, cutCurrentTasks, deleteTimelineView
+from utils import updateTimeline, deleteTimelineView
+from utils.cut_current_tasks import cutCurrentTasks
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from bot import Faust

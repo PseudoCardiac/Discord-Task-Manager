@@ -81,7 +81,7 @@ async def updateTimeline( faust: "Faust", yesterday = False ):
         await editTimeline( latestTimelineMsg, targetDate )
     else:
         # 타임라인 생성
-        await deleteTimelineView( latestTimelineMsg )
+        await deleteMessageView( latestTimelineMsg )
         await createTimeline( faust, targetDate )
     # ===================================
 
@@ -109,11 +109,20 @@ async def createTimeline( faust: "Faust", targetDate: datetime.date | None = Non
     return msg
 
 
-async def deleteTimelineView( msg: discord.Message ):
+async def deleteMessageView( msg: discord.Message ):
     """
     메시지에서 뷰를 제거한다.
     """
     await msg.edit( view = None )
+
+
+async def deleteTimelineView( faust: "Faust" ):
+    latestTimelineMsg = await getLatestTimelineMessage( faust )
+
+    if latestTimelineMsg is False:
+        return False
+    
+    await deleteMessageView( latestTimelineMsg )
 
 
 class TimelineView( discord.ui.View ):

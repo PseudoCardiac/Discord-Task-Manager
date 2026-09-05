@@ -105,6 +105,10 @@ def genChart( dt: datetime.date | None = None ):
 
     # 플롯 그리기
     plt.savefig( "tt.png" )
+
+    # 플롯 닫기 (메모리 절약)
+    plt.close()
+
     # plt.show()
 
 

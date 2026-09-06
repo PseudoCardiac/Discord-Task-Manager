@@ -1,7 +1,7 @@
 import discord, os, asyncio
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
-from objects import Info
+from objects import Info, TaskEmbedView
 from cogs import TaskManagementCog, DailyReportCog, FileManagementCog, PresenceListener
 from utils import TimelineView
 
@@ -19,6 +19,7 @@ class Faust( Bot ):
         await self.add_cog( FileManagementCog( self ) )
         await self.add_cog( PresenceListener( self ) )
         self.add_view( TimelineView() )
+        self.add_view( TaskEmbedView() )
         # await self.tree.sync()
         print( "파우스트 온라인." )
 

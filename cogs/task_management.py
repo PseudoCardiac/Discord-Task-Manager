@@ -34,7 +34,7 @@ class TaskManagementCog( Cog ):
         )
 
         embed = TaskEmbed( task, self.bot.info )
-        msg = await self.bot.info.channel_log.send( embed = embed, view = TaskEmbedView( embed ) )
+        msg = await self.bot.info.channel_log.send( embed = embed, view = TaskEmbedView() )
         await i.followup.send( "태스크가 등록되었습니다." )
             
         task.msgID = msg.id
@@ -187,7 +187,7 @@ class TaskEditSelect( discord.ui.Select ):
         self.disabled = True
 
         task = Task.get( self.values[0] )
-        if task is False:
+        if task is None:
             await interaction.response.send_message( "태스크를 찾지 못했습니다. 무언가 잘못되었군요." )
             return
 

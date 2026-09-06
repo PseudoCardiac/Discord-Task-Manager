@@ -203,4 +203,23 @@ class Task:
                 return Task.toTaskObj( task )
 
         else:
-            return False
+            return None
+
+
+    @staticmethod
+    def fromEmbed( embed ):
+        footer = embed.footer.text
+        if footer is None:
+            return None
+
+        _, _, id = footer.partition( '#' )
+
+        return Task.get( id )
+
+
+    # @staticmethod
+    # def getCurrentTasks():
+    #     with open( "data/current_tasks.json", 'r', encoding = "UTF-8" ) as f:
+    #         currentTasks: list[ dict[ str, str ] ] = json.load( f )
+
+    #     return list( map( Task.toTaskObj, currentTasks ) )

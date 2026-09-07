@@ -6,7 +6,7 @@ from .category import Category
 from typing import TYPE_CHECKING
 # if TYPE_CHECKING:
 from .task import Task
-from utils import minutesToHours, updateTimeline, editTaskEmbedFinished, editTaskEmbedAborted
+from utils import minutesToHours, updateTimeline, editTaskEmbedAborted
 
 
 weekdays = [ '월', '화', '수', '목', '금', '토', '일' ]
@@ -196,8 +196,7 @@ class ConfirmView( discord.ui.View ):
             return
 
         # ===== 원본 메시지 수정 =====
-        embed = self.interactionMessage.embeds[ 0 ]   # type: ignore
-        editTaskEmbedFinished( embed, result )
+        embed = TaskEmbed( result, i.client.info )  # type: ignore
 
         await self.interactionMessage.edit( embed = embed, view = None )  # type: ignore
         # ============================

@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from bot import Faust
 from objects import Task, Category, TaskEmbed, TaskEmbedView
 from .timer import setTimer
-from utils import minutesToHours, updateTimeline, getTodaysTasks, editFinishedTask, editTaskEmbedFinished, editTaskEmbedAborted, deleteTaskFromToday
+from utils import updateTimeline, getTodaysTasks, editFinishedTask, editTaskEmbedAborted, deleteTaskFromToday
 
 
 class TaskManagementCog( Cog ):
@@ -60,8 +60,7 @@ class TaskManagementCog( Cog ):
 
             try:
                 msg = await self.bot.info.channel_log.fetch_message( task.msgID )
-                embed = msg.embeds[ 0 ]
-                editTaskEmbedFinished( embed, task )
+                embed = TaskEmbed( task, i.client.info )    # type: ignore
                 await msg.edit( embed = embed, view = None )
             except discord.errors.NotFound:
                 continue
@@ -138,11 +137,7 @@ class TaskManagementCog( Cog ):
             end = endDateTime
         )
 
-        minutes = round( ( endDateTime - startDateTime ).total_seconds() ) // 60
-        durationString = minutesToHours( minutes )
-
         embed = TaskEmbed( task, self.bot.info )
-        embed.description = re.sub( r"<t:\d+:R> 시작", f"{ durationString }동안 진행", str( embed.description ) )
 
         msg = await self.bot.info.channel_log.send( embed = embed )
         task.msgID = msg.id

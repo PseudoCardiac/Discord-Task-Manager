@@ -64,10 +64,10 @@ def editFinishedTask( task: Task, name, desc, category, start, end ):
 #     await msg.edit( embed = TaskEmbed( task, faust.info ) )
 
 
-def editTaskEmbedFinished( embed: discord.Embed, task: Task ):
-    minutes = round( ( datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) - task.start ).total_seconds() ) // 60
-    durationString = minutesToHours( minutes )
-    embed.description = re.sub( r"<t:\d+:R> 시작", f"{ durationString }동안 진행", str( embed.description ) )
+# def editTaskEmbedFinished( embed: discord.Embed, task: Task ):
+#     minutes = round( ( datetime.now( tz = ZoneInfo( "Asia/Seoul" ) ) - task.start ).total_seconds() ) // 60
+#     durationString = minutesToHours( minutes )
+#     embed.description = re.sub( r"<t:\d+:R> 시작", f"{ durationString }동안 진행", str( embed.description ) )
 
 
 def editTaskEmbedAborted( embed: discord.Embed ):

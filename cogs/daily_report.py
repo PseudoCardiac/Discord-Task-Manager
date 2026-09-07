@@ -28,7 +28,7 @@ class DailyReportCog( Cog ):
 
     @tasks.loop( time = MIDNIGHT )
     async def dailyReport( self ):
-        cutCurrentTasks()
+        await cutCurrentTasks( self.faust )
         await updateTimeline( self.faust, True )
         await deleteTimelineView( self.faust )
 

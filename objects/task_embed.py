@@ -195,13 +195,14 @@ class ConfirmView( discord.ui.View ):
             await i.followup.send( "태스크를 찾지 못했습니다. 무언가 잘못되었군요." )
             return
 
+        result.record()
+        
         # ===== 원본 메시지 수정 =====
         embed = TaskEmbed( result, i.client.info )  # type: ignore
 
         await self.interactionMessage.edit( embed = embed, view = None )  # type: ignore
         # ============================
 
-        result.record()
         await updateTimeline( i.client ) # type: ignore
         await i.followup.send( "태스크가 완료되었습니다." )
 

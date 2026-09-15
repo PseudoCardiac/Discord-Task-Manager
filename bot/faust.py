@@ -41,8 +41,10 @@ class Faust( Bot ):
                 for stat in top_stats[:10]:
                     statMsg += statMsg + str( stat ) + '\n'
 
-                scy = await self.fetch_user( 513676568745213953 )
-                await scy.send( statMsg )
+                await self.info.scy.send( statMsg )
+
+            else:
+                await self.info.scy.send( "메모리 모니터링 개시" )                
 
             snapshot1 = snapshot2
 

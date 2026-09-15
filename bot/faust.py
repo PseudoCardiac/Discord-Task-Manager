@@ -28,11 +28,9 @@ class Faust( Bot ):
 
 
     async def memorySnapshotTask( self ):
-        scy = await self.fetch_user( 513676568745213953 )
         snapshot1 = None
 
         while True:
-            await asyncio.sleep( 3600 )
             snapshot2 = tracemalloc.take_snapshot()
 
             if snapshot1:
@@ -42,12 +40,13 @@ class Faust( Bot ):
                 for stat in top_stats[:10]:
                     statMsg += statMsg + str( stat ) + '\n'
 
-                await scy.send( statMsg )
+                await self.info.scy.send( statMsg )
 
             else:
-                await scy.send( "메모리 모니터링 개시" )
+                await self.info.scy.send( "메모리 모니터링 개시" )
 
             snapshot1 = snapshot2
+            await asyncio.sleep( 3600 )
 
 
     async def on_ready( self ):

@@ -31,21 +31,26 @@ class Faust( Bot ):
         snapshot1 = None
 
         while True:
-            snapshot2 = tracemalloc.take_snapshot()
+            try:
+                snapshot2 = tracemalloc.take_snapshot()
 
-            if snapshot1:
-                top_stats = snapshot2.compare_to( snapshot1, 'lineno' )
-                statMsg = "[ 메모리 증가 Top 10 ]\n"
+                if snapshot1:
+                    top_stats = snapshot2.compare_to( snapshot1, 'lineno' )
+                    statMsg = "[ 메모리 증가 Top 10 ]\n"
 
-                for stat in top_stats[:10]:
-                    statMsg += statMsg + str( stat ) + '\n'
+                    for stat in top_stats[:10]:
+                        statMsg += statMsg + str( stat ) + '\n'
 
-                await self.info.scy.send( statMsg )
+                    await self.info.scy.send( statMsg )
 
-            else:
-                await self.info.scy.send( "메모리 모니터링 개시" )
+                else:
+                    await self.info.scy.send( "메모리 모니터링 개시" )
+                
+                snapshot1 = snapshot2
+                
+            except Exception as e:
+                await self.info.scy.send( f"Error: {e}" )
 
-            snapshot1 = snapshot2
             await asyncio.sleep( 3600 )
 
 

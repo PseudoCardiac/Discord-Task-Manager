@@ -1,4 +1,4 @@
-import discord, datetime
+import discord, datetime, asyncio
 from zoneinfo import ZoneInfo
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -10,7 +10,7 @@ from .string_to_date import stringToDate
 weekdays = [ '월', '화', '수', '목', '금', '토', '일' ]
 
 
-def generateTimeline( targetDate: datetime.date | None = None ):
+async def generateTimeline( targetDate: datetime.date | None = None ):
     """
     전달된 날짜 혹은 호출 시각을 기준으로 타임라인 임베드와 어태치먼트용 파일을 생성해 반환한다.
     """
@@ -22,8 +22,8 @@ def generateTimeline( targetDate: datetime.date | None = None ):
         color = 16757172
     )
 
-    genChart( targetDate )
-
+    await asyncio.to_thread( genChart, targetDate )
+                                
     with open( "tt.png", 'rb' ) as f:
         chart = discord.File( f )
 
@@ -90,7 +90,7 @@ async def editTimeline( latestTimelineMsg: discord.Message, targetDate: datetime
     """
     타임라인 채널의 최신 메시지를 수정한다.
     """
-    chart, embed = generateTimeline( targetDate )
+    chart, embed = await generateTimeline( targetDate )
 
     await latestTimelineMsg.edit( attachments = [ chart ], embed = embed, view = TimelineView() )
 
@@ -99,7 +99,7 @@ async def createTimeline( faust: "Faust", targetDate: datetime.date | None = Non
     """
     타임라인 채널에 새로운 메시지를 전송한다.
     """
-    chart, embed = generateTimeline( targetDate )
+    chart, embed = await generateTimeline( targetDate )
 
     msg = await faust.info.channel_timeline.send( file = chart, embed = embed, view = TimelineView() )
 

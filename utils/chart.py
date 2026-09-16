@@ -1,5 +1,9 @@
 import datetime, json
 from zoneinfo import ZoneInfo
+
+import matplotlib
+matplotlib.use( "agg" ) # GUI 의존성이 없는 백엔드 (경고 방지)
+
 import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 from matplotlib.ticker import AutoMinorLocator
@@ -107,7 +111,7 @@ def genChart( dt: datetime.date | None = None ):
     plt.savefig( "tt.png" )
 
     # 플롯 닫기 (메모리 절약)
-    plt.close()
+    plt.close( "all" )
 
     # plt.show()
 

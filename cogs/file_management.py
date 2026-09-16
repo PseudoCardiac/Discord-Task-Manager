@@ -1,4 +1,4 @@
-import discord, json
+import discord, json, asyncio
 from discord.ext.commands import Cog
 from typing import Literal
 from utils import genChart, updateTimeline
@@ -60,7 +60,7 @@ class FileManagementCog( Cog ):
         with open( "data/today.json", 'w+' ) as f:
             json.dump( {}, f )
 
-        genChart()
+        await asyncio.to_thread( genChart )
 
         await i.followup.send( "시스템 파일을 성공적으로 초기화했습니다." )
 
@@ -69,7 +69,7 @@ class FileManagementCog( Cog ):
     async def refreshDashboard( self, i: discord.Interaction ):
         await i.response.defer( ephemeral = True, thinking = True )
 
-        genChart()
+        await asyncio.to_thread( genChart )
         await updateTimeline( i.client )   # type: ignore
 
         await i.followup.send( "대시보드를 성공적으로 새로고침했습니다." )

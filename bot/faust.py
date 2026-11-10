@@ -1,12 +1,9 @@
-import discord, os, asyncio, tracemalloc
+import discord, os
 from discord.ext.commands import Bot
 from dotenv import load_dotenv
 from objects import Info, TaskEmbedView
 from cogs import TaskManagementCog, DailyReportCog, FileManagementCog, PresenceListener
 from utils import TimelineView
-
-
-tracemalloc.start()
 
 
 class Faust( Bot ):
@@ -24,32 +21,6 @@ class Faust( Bot ):
         self.add_view( TimelineView() )
         self.add_view( TaskEmbedView() )
         # await self.tree.sync()
-        self.memory_task = asyncio.create_task( self.memorySnapshotTask() )
-
-
-    async def memorySnapshotTask( self ):
-        snapshot1 = None
-
-        while True:
-            try:
-                snapshot2 = tracemalloc.take_snapshot()
-
-                if snapshot1:
-                    top_stats = snapshot2.compare_to( snapshot1, 'lineno' )
-                    await self.info.scy.send( "[ 메모리 증가 Top 10 ]" )
-
-                    for stat in top_stats[:10]:
-                        await self.info.scy.send( str( stat ) )
-
-                else:
-                    await self.info.scy.send( "메모리 모니터링 개시" )
-                
-                snapshot1 = snapshot2
-
-            except Exception as e:
-                await self.info.scy.send( f"Error: {e}" )
-
-            await asyncio.sleep( 3600 )
 
 
     async def on_ready( self ):
